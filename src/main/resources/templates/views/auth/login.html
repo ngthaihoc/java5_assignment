@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{views/main :: layout(~{::body})}"
+>
+  <body>
+    <!-- Do xài th:replace layout nên phần để css phải bỏ dưới thẻ body mới ăn -->
+    <link th:href="@{/css/login.css}" rel="stylesheet" />
+    <div class="header-gradient py-5 text-center">
+      <a
+        th:href="@{/}"
+        class="link-dark link-offset-2 link-underline-opacity-0 fw-medium back-home"
+      >
+        Đăng nhập
+      </a>
+      <h1 class="fw-bold text-orange">Đăng nhập tài khoản</h1>
+    </div>
+
+    <div class="container my-5 pb-5">
+      <div
+        class="row g-0 border-orange shadow-sm mx-auto rounded-3 overflow-hidden"
+        style="max-width: 900px"
+      >
+        <div class="col-md-7 p-4 p-lg-5 bg-white text-dark">
+          <h4 class="fw-bold mb-4">Đăng nhập tài khoản</h4>
+          <form th:action="@{/login}" th:object="${loginForm}" method="post">
+            <div
+              th:if="${error}"
+              class="alert alert-danger py-2 small mb-3 text-center"
+            >
+              <span th:text="${error}"></span>
+            </div>
+
+            <div class="mb-3 text-start">
+              <label class="form-label small fw-bold"
+                >Email <span class="text-danger">*</span></label
+              >
+              <input
+                type="email"
+                th:field="*{email}"
+                class="form-control rounded-1"
+                placeholder="Email"
+                required
+              />
+            </div>
+
+            <div class="mb-4 text-start">
+              <label class="form-label small fw-bold"
+                >Mật khẩu <span class="text-danger">*</span></label
+              >
+              <input
+                type="password"
+                th:field="*{password}"
+                class="form-control rounded-1"
+                placeholder="Mật khẩu"
+                required
+              />
+            </div>
+
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="rememberMe"
+                  th:field="*{rememberMe}"
+                />
+                <label class="form-check-label small fw-bold" for="rememberMe"
+                  >Nhớ tài khoản</label
+                >
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="btn bg-orange text-white w-100 fw-bold py-2 rounded-1 shadow-sm"
+            >
+              ĐĂNG NHẬP
+            </button>
+          </form>
+
+          <p class="text-center small mb-0 mt-3 text-muted">
+            Bạn quên mật khẩu bấm
+            <a href="#" class="text-primary fw-bold text-decoration-none"
+              >vào đây</a
+            >
+          </p>
+        </div>
+
+        <div
+          class="col-md-5 bg-orange text-white p-4 p-lg-5 d-none d-md-flex flex-column justify-content-between text-start"
+        >
+          <div>
+            <h5 class="fw-bold mb-4">Quyền lợi với thành viên</h5>
+            <ul class="list-unstyled">
+              <li class="mb-3">
+                <i class="fas fa-check-circle me-2"></i> Vận chuyển siêu tốc
+              </li>
+              <li class="mb-3">
+                <i class="fas fa-check-circle me-2"></i> Sản phẩm đa dạng
+              </li>
+              <li class="mb-3">
+                <i class="fas fa-check-circle me-2"></i> Đổi trả dễ dàng
+              </li>
+              <li class="mb-3">
+                <i class="fas fa-check-circle me-2"></i> Tích điểm đổi quà
+              </li>
+              <li class="mb-3">
+                <i class="fas fa-check-circle me-2"></i> Giảm giá lên đến 10%
+              </li>
+            </ul>
+          </div>
+          <div class="mt-4">
+            <a
+              th:href="@{/register}"
+              class="btn btn-outline-white px-5 py-2 fw-bold rounded-2"
+              >Đăng ký</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
