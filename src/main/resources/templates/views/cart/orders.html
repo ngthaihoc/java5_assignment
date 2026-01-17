@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{views/main :: layout(~{::body})}">
+<body>
+    <link th:href="@{/css/card.css}" rel="stylesheet" />
+    
+    <div class="header-gradient py-5 text-center">
+        <h1 class="fw-bold ">Đơn hàng đã đặt</h1>
+        <p class="text-muted small">Đây là tất cả đơn hàng của bạn đã đặt</p>
+    </div>
+
+    <div class="container my-5">
+        <div class="card-box bg-white border-orange shadow-sm p-4 mx-auto" style="max-width: 900px;">
+            <table class="table">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="text-orange">Mã đơn</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#DH001</td>
+                        <td>15/01/2026</td>
+                        <td class="">200.000đ</td>
+                        <td><span class="badge bg-success">Đã thanh toán</span></td>
+                        <td><a href="/orders/detail" class="text-orange text-decoration-none small fw-bold">Xem chi tiết</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
