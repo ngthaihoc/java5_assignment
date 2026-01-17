@@ -1,3 +1,58 @@
-<footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org">
-  <p>Đây là Footer</p>
+<footer th:fragment="footer" xmlns:th="http://www.thymeleaf.org" class="text-white pt-5 pb-0"
+        style="background-color: rgb(245, 175, 175);">
+
+  <div class="container text-start text-md-left pb-4">
+    <div class="row text-start text-md-left">
+
+      <div class="col-md-5 col-lg-5 col-xl-5 mx-auto mt-3">
+        <div class="mb-4">
+          <img th:src="@{/images/LogoTwo.png}" class="img-fluid" alt="Logo" style="max-width: 400px;">
+        </div>
+        <p class="fst-italic mb-3 fs-5">
+          "Chúng tôi không bán sách, chúng tôi bán kiến thức."
+        </p>
+
+        <h6 class="text-uppercase fw-bold mb-3 mt-4">Đăng ký nhận newsletter</h6>
+        <div class="input-group mb-3">
+          <input type="email" class="form-control border-0" placeholder="Địa chỉ email" aria-label="Email">
+          <button class="btn btn-dark text-white" type="button">Gửi</button>
+        </div>
+      </div>
+
+      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+        <h6 class="text-uppercase mb-4 fw-bold">Thông tin</h6>
+        <p><a href="#" class="text-white text-decoration-none">Giới thiệu</a></p>
+        <p><a href="#" class="text-white text-decoration-none">Hệ thống phát hành</a></p>
+      </div>
+
+      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+        <h6 class="text-uppercase mb-4 fw-bold">Chính sách</h6>
+        <p><a href="#" class="text-white text-decoration-none">Chính sách thanh toán</a></p>
+        <p><a href="#" class="text-white text-decoration-none">Chính sách vận chuyển</a></p>
+        <p><a href="#" class="text-white text-decoration-none">Chính sách bảo mật</a></p>
+        <p><a href="#" class="text-white text-decoration-none">Chính sách đổi trả hoàn tiền</a></p>
+      </div>
+
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h6 class="text-uppercase mb-4 fw-bold">Liên hệ</h6>
+
+        <div class="d-flex align-items-start mb-3">
+          <span class="fs-5">Address: Tòa nhà Innovation, Công viên phần mềm Quang Trung, P. Trung Mỹ Tây, Q.12.</span>
+        </div>
+
+        <div class="d-flex align-items-center mb-3">
+          <span class="fs-5">Phone: 0963672903</span>
+        </div>
+
+        <div class="d-flex align-items-center mb-3">
+          <span class="fs-5">Gmail: thaihocng@synkrok.vn</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="bg-dark text-white text-center py-3 w-100">
+    &copy; 2026 Bản quyền thuộc về Synkrokbooks | Cung cấp bởi Welly
+  </div>
 </footer>
