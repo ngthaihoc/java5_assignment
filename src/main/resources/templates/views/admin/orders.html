@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{views/admin/layout :: layout(~{::body})}">
+<body>
+
+<h4 class="fw-bold mb-3">Quản lý đơn hàng</h4>
+
+<!-- SEARCH + FILTER -->
+<div class="bg-white rounded shadow-sm p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-8">
+            <input class="form-control"
+                   placeholder="Tìm kiếm theo mã đơn hoặc tên khách hàng...">
+        </div>
+        <div class="col-md-4">
+            <select class="form-select">
+                <option>Tất cả</option>
+                <option>Đang giao</option>
+                <option>Đã giao</option>
+                <option>Đã hủy</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<table class="table table-borderless bg-white shadow-sm rounded align-middle">
+    <thead class="small text-muted">
+    <tr>
+        <th>Mã đơn</th>
+        <th>Khách hàng</th>
+        <th>Ngày đặt</th>
+        <th>Sản phẩm</th>
+        <th>Tổng tiền</th>
+        <th>Trạng thái</th>
+        <th class="text-center">Thao tác</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="o : ${orders}">
+        <!-- MÃ ĐƠN -->
+        <td>#<span th:text="${o.id}"></span></td>
+
+        <!-- KHÁCH HÀNG -->
+        <td>
+            <div class="fw-medium" th:text="${o.customer}"></div>
+            <small class="text-muted" th:text="${o.email}"></small>
+        </td>
+
+        <!-- NGÀY ĐẶT -->
+        <td th:text="${o.date}"></td>
+
+        <!-- SẢN PHẨM -->
+        <td th:text="${o.items} + ' sản phẩm'"></td>
+
+        <!-- TỔNG TIỀN -->
+        <td class="fw-bold"
+            th:text="${#numbers.formatDecimal(o.total,0,'COMMA',0,'POINT')} + 'đ'">
+        </td>
+
+        <!-- TRẠNG THÁI -->
+        <td>
+            <span th:if="${o.status == 1}" class="badge-status badge-shipping">Đang giao</span>
+            <span th:if="${o.status == 2}" class="badge-status badge-done">Đã giao</span>
+            <span th:if="${o.status == 3}" class="badge-status badge-cancel">Đã hủy</span>
+        </td>
+
+        <!-- THAO TÁC -->
+        <td class="text-center">
+            👁
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
