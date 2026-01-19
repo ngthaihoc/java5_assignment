@@ -1,5 +1,8 @@
 package com.fpt.assignment.repository;
 
-public class BookRepository {
+import com.fpt.assignment.entity.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookRepository extends JpaRepository<Book, Long> {
 
 }
