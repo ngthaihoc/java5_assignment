@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{views/admin/layout :: layout(~{::body})}">
+<body>
+
+<h4 class="fw-bold mb-4">Quản lý khách hàng</h4>
+
+<!-- FILTER -->
+<div class="bg-white rounded shadow-sm p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-6">
+            <input type="text" class="form-control"
+                   placeholder="Tìm theo tên, email, số điện thoại...">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select">
+                <option>Tất cả trạng thái</option>
+                <option>Hoạt động</option>
+                <option>Đã khóa</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select">
+                <option>Tất cả hạng</option>
+                <option>Vàng</option>
+                <option>Bạc</option>
+                <option>Thường</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="bg-white rounded shadow-sm">
+    <table class="table align-middle mb-0">
+        <thead>
+        <tr class="small text-muted">
+            <th>Khách hàng</th>
+            <th>Liên hệ</th>
+            <th>Hạng</th>
+            <th>Đơn hàng</th>
+            <th>Tổng chi</th>
+            <th>Trạng thái</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="c : ${customers}">
+            <!-- KHÁCH HÀNG -->
+            <td>
+                <div class="d-flex align-items-center">
+                    <div>
+                        <div class="fw-medium" th:text="${c.name}"></div>
+                        <small class="text-muted">ID: <span th:text="${c.id}"></span></small>
+                    </div>
+                </div>
+            </td>
+
+            <!-- LIÊN HỆ -->
+            <td>
+                <div th:text="${c.email}"></div>
+                <small class="text-muted" th:text="${c.phone}"></small>
+            </td>
+
+            <!-- HẠNG -->
+            <td>
+        <span class="badge rounded-pill"
+              th:classappend="
+                ${c.rank == 'Vàng'} ? 'bg-warning text-dark' :
+                (${c.rank == 'Bạc'} ? 'bg-light text-dark border' :
+                'bg-secondary')"
+              th:text="${c.rank}">
+        </span>
+            </td>
+
+            <!-- ĐƠN HÀNG -->
+            <td>
+                <div><b th:text="${c.orders} + ' đơn'"></b></div>
+                <small class="text-muted" th:text="${c.lastOrder}"></small>
+            </td>
+
+            <!-- TỔNG CHI -->
+            <td class="fw-bold"
+                th:text="${#numbers.formatDecimal(c.total,0,'COMMA',0,'POINT')} + ' đ'">
+            </td>
+
+            <!-- TRẠNG THÁI -->
+            <td>
+        <span th:if="${c.status}"
+              class="badge bg-success-subtle text-success rounded-pill">
+          Hoạt động
+        </span>
+                <span th:if="${!c.status}"
+                      class="badge bg-danger-subtle text-danger rounded-pill">
+          Đã khóa
+        </span>
+            </td>
+
+            <!-- THAO TÁC -->
+            <td class="text-center">
+                👁️
+                <span th:if="${c.status}">🔒</span>
+                <span th:if="${!c.status}">🔓</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
