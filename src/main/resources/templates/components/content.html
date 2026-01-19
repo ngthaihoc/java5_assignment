@@ -1,4 +1,9 @@
-<main  th:fragment="content" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{views/layout :: layout(~{::body})}"
+>
+<body>
     <div class="container my-4">
 
         <section id="main-slider" class="mb-5">
@@ -247,3 +252,4 @@
 
     </div>
 </main>
+</

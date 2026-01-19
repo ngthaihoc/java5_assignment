@@ -18,7 +18,6 @@ import com.fpt.assignment.utils.XMailer;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class AuthController {

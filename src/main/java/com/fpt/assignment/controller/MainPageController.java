@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 public class MainPageController {
 
-
-    @RequestMapping("/synkrokbooks")
-    public String mainPage(){
-        return  "views/main";
+    @RequestMapping("/home")
+    public String mainPage() {
+        return "/components/content";
     }
 }
