@@ -1,23 +1,30 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{views/main :: layout(~{::body})}">
-<body>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{views/layout :: layout(~{::body})}"
+>
+  <body>
     <link th:href="@{/css/card.css}" rel="stylesheet" />
-    
+
     <div class="header-gradient py-5 text-center">
-        <h1 class="fw-bold">Sản phẩm của tôi</h1>
-        <p class="text-muted small">Những cuốn sách bạn đã sở hữu</p>
+      <h1 class="fw-bold">Sản phẩm của tôi</h1>
+      <p class="text-muted small">Những cuốn sách bạn đã sở hữu</p>
     </div>
 
     <div class="container my-5">
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="card-box card-hover text-center border-0">
-                    <img src="/images/book.png" class="img-fluid rounded-3 mb-3" style="box-shadow: var(--soft-shadow);">
-                    <h6 class="fw-bold mb-3 text-orange">Lập trình Java</h6>
-                    <button class="btn-main w-100">ĐỌC SÁCH</button>
-                </div>
-            </div>
-            </div>
+      <div class="row g-4">
+        <div class="col-md-3">
+          <div class="card-box card-hover text-center border-0">
+            <img
+              src="/images/book.png"
+              class="img-fluid rounded-3 mb-3"
+              style="box-shadow: var(--soft-shadow)"
+            />
+            <h6 class="fw-bold mb-3 text-orange">Lập trình Java</h6>
+            <button class="btn-main w-100">ĐỌC SÁCH</button>
+          </div>
+        </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{views/admin/layout :: layout(~{::body})}">
+<body>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">Quản lý nhà xuất bản</h4>
+    <button class="btn btn-primary">+ Thêm nhà xuất bản</button>
+</div>
+
+<table class="table table-borderless bg-white shadow-sm rounded align-middle">
+    <thead class="small text-muted">
+    <tr>
+        <th>ID</th>
+        <th>Tên nhà xuất bản</th>
+        <th>Địa chỉ</th>
+        <th>Email liên hệ</th>
+        <th class="text-center">Thao tác</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="p : ${publishers}">
+        <td th:text="${p.id}"></td>
+        <td th:text="${p.name}"></td>
+        <td th:text="${p.address}"></td>
+        <td th:text="${p.email}"></td>
+        <td class="text-center">
+            ✏️ 🗑️
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
