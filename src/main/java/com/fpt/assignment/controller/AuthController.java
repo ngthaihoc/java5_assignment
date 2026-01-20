@@ -16,8 +16,11 @@ import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.service.AuthService;
 import com.fpt.assignment.utils.XMailer;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class AuthController {
@@ -30,6 +33,9 @@ public class AuthController {
 
   @Autowired
   HttpSession session;
+
+  @Autowired
+  HttpServletRequest req;
 
   @Autowired
   HttpServletResponse response;
@@ -48,11 +54,17 @@ public class AuthController {
 
         if (dto.isRememberMe()) {
           authService.saveAccountToCookie(user, response);
-        } else {
-          session.setAttribute("user", user);
         }
 
-        return "redirect:/";
+        session.setAttribute("user", user);
+
+        if (session.getAttribute("back-url") != null) {
+          String backUrl = (String) session.getAttribute("back-url");
+          session.removeAttribute("back-url");
+          return "redirect:" + backUrl;
+        }
+
+        return "redirect:/home";
       }
       model.addAttribute("error", "Sai email hoặc mật khẩu");
     } catch (RuntimeException e) {
@@ -73,6 +85,7 @@ public class AuthController {
 
     session.setAttribute("otp", otp);
     session.setAttribute("registerDTO", dto);
+    session.setAttribute("otpAction", "register");
 
     // Gửi email
     String subject = "Xác thực tài khoản";
@@ -93,21 +106,86 @@ public class AuthController {
   @PostMapping("/verify-otp")
   public String verify(HttpSession session, HttpServletResponse response, @RequestParam("otpCode") String userOtp) {
     String serverOtp = (String) session.getAttribute("otp");
+
+    if (session.getAttribute("otpAction") != null && session.getAttribute("otpAction") == "forgot") {
+      return "views/auth/changePassword";
+    }
+
     RegisterForm registerDTO = (RegisterForm) session.getAttribute("registerDTO");
 
     if (userOtp.equals(serverOtp)) {
 
-      Optional<Account> account = authService.createAccount(registerDTO);
+      Account account = authService.createAccount(registerDTO).orElseThrow(null);
 
-      // Thành công
-      session.setAttribute("user", account);
+      // Xoá otp và registerDTO trong session
       session.removeAttribute("otp");
       session.removeAttribute("registerDTO");
-      return "redirect:/";
+
+      // Kiểm tra user có null không trước khi set vào session
+      session.setAttribute("user", account);
+      return "redirect:/home";
+
     } else {
       String email = (registerDTO != null) ? registerDTO.getEmail() : "";
       return "redirect:/verify?email=" + email + "&error=true";
     }
+  }
+
+  @GetMapping("/forgot-password")
+  public String showForgotForm() {
+    return "views/auth/forgot";
+  }
+
+  @PostMapping("/change-password")
+  public String changePassword(@RequestParam("newPassword") String newPassword) {
+    String email = (String) session.getAttribute("forgotEmail");
+    authService.updatePassword(email, newPassword);
+
+    // Xoá các thuộc tính liên quan trong session
+    session.removeAttribute("otp");
+    session.removeAttribute("forgotEmail");
+    session.removeAttribute("otpAction");
+
+    return "redirect:/login";
+  }
+
+  @PostMapping("/forgot-password")
+  public String forgotPassword(@RequestParam("email") String email) {
+    String otp = authService.generateOTP();
+
+    session.setAttribute("otp", otp);
+    session.setAttribute("forgotEmail", email);
+    session.setAttribute("otpAction", "forgot");
+
+    // Gửi email
+    String subject = "Đổi mật khẩu tài khoản";
+    String body = "Mã OTP của bạn là: " + otp;
+    XMailer.send(email, subject, body);
+
+    return "redirect:/verify?email=" + email;
+  }
+
+  @GetMapping("/test")
+  public String getMethodName() {
+    System.out.println("Test auth controller" + session.getAttribute("user"));
+    return "views/auth/resetPassword";
+  }
+
+  @GetMapping("/logout")
+  public String logout() {
+    // 1. Huỷ Session
+    if (session != null) {
+      session.invalidate();
+    }
+
+    // 2. Xoá sạch Cookie
+    Cookie cookie = new Cookie("user", "");
+    cookie.setMaxAge(0); // Xóa cookie
+    cookie.setPath("/");
+    response.addCookie(cookie);
+
+    return "redirect:/login";
+
   }
 
 }

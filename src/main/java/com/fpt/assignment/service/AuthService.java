@@ -2,6 +2,7 @@ package com.fpt.assignment.service;
 
 import java.net.HttpCookie;
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.fpt.assignment.dto.RegisterForm;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.repository.AccountRepository;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Service
@@ -51,9 +53,21 @@ public class AuthService {
   }
 
   public void saveAccountToCookie(Account account, HttpServletResponse response) {
-    HttpCookie cookie = new HttpCookie("userId", account.getEmail());
-    cookie.setPath("/");
-    cookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
-    response.addHeader("Set-Cookie", cookie.toString());
+    byte[] bytes = (account.getEmail()).getBytes();
+    String userInfo = Base64.getEncoder().encodeToString(bytes);
+    Cookie cookie = new Cookie("user", userInfo);
+    cookie.setMaxAge(30 * 24 * 60 * 60); // hiệu lực 30 ngày
+    cookie.setPath("/"); // hiệu lực toàn ứng dụng
+    response.addCookie(cookie);
+  }
+
+  public void updatePassword(String email, String newPassword) {
+    Account acc = accountRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("Email không tồn tại!"));
+
+    acc.setPassword(newPassword);
+
+    accountRepository.save(acc);
+
   }
 }

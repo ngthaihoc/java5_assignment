@@ -1,22 +1,14 @@
 /* Custom Brand Colors */
-:root {
-  --brand-orange: #f37021;
-}
-
 .bg-orange {
-  background-color: var(--brand-orange) !important;
-}
-
-.text-orange {
-  color: var(--brand-orange) !important;
+  background-color: var(--pink-4) !important;
 }
 
 .border-orange {
-  border: 1px solid var(--brand-orange) !important;
+  border: 1px solid var(--pink-4) !important;
 }
 
 .header-gradient {
-  background: linear-gradient(to right, #ffe0d0, #ffb085);
+  background: linear-gradient(to top, var(--pink-3), var(--pink-4));
 }
 
 /* Register Button */
@@ -29,7 +21,7 @@
 
 .btn-outline-white:hover {
   background: white;
-  color: var(--brand-orange) !important;
+  color: var(--pink-4) !important;
 }
 
 .back-home {
@@ -39,7 +31,7 @@
 }
 
 .back-home:hover {
-  color: var(--brand-orange) !important;
+  color: black !important;
 }
 
 .otp-input {
@@ -53,7 +45,7 @@
 }
 
 .otp-input:focus {
-  border-color: var(--brand-orange);
+  border-color: var(--pink-4);
   box-shadow: 0 0 8px #632804;
   outline: none;
 }
