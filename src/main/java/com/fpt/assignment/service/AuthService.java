@@ -13,7 +13,6 @@ import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.repository.AccountRepository;
 
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @Service
 public class AuthService {

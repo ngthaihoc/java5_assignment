@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{views/layout :: layout(~{::body})}"
+>
+  <body>
+    <link th:href="@{/css/card.css}" rel="stylesheet" />
+
+    <div class="header-gradient py-5 text-center">
+      <h1 class="fw-bold">Giỏ hàng của bạn</h1>
+      <p class="text-muted small">
+        Kiểm tra lại các mặt hàng trước khi thanh toán
+      </p>
+    </div>
+
+    <div class="container my-5">
+      <div class="row g-4">
+        <div class="col-md-8">
+          <div class="card-box p-4 bg-white border-orange shadow-sm">
+            <table class="table align-middle" style="width: 100%">
+              <thead class="text-orange">
+                <tr>
+                  <th>Sản phẩm</th>
+                  <th>Giá</th>
+                  <th style="width: 100px">Số lượng</th>
+                  <th>Thành tiền</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="d-flex align-items-center">
+                    <img src="/images/book.png" width="60" class="me-3" />
+                    <span class="fw-bold">Lập trình Java</span>
+                  </td>
+                  <td>100.000đ</td>
+                  <td>
+                    <input
+                      type="number"
+                      value="1"
+                      class="form-control form-control-sm"
+                    />
+                  </td>
+                  <td class="fw-bold">100.000đ</td>
+                  <td><button class="btn btn-sm text-danger">Xóa</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card-box border-orange">
+            <h5 class="fw-bold mb-4 text-orange">Tóm tắt đơn hàng</h5>
+            <div class="d-flex justify-content-between mb-3 text-muted">
+              <span class="text-orange">Tạm tính:</span>
+              <span>100.000đ</span>
+            </div>
+            <hr class="opacity-10" />
+            <div class="d-flex justify-content-between mb-4 fs-5 fw-bold">
+              <span>Tổng cộng:</span>
+              <span class="text-orange">100.000đ</span>
+            </div>
+            <button class="btn-main w-100 py-3 text-uppercase">
+              Đặt hàng ngay
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

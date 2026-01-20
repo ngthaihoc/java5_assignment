@@ -1,0 +1,59 @@
+:root {
+    --pink-1: #FCF8F8;
+    --pink-2: #FBEFEF;
+    --pink-3: #F9DFDF;
+    --pink-4: #F5AFAF;
+}
+
+.admin-bg {
+    background: var(--pink-1);
+    min-height: 100vh;
+}
+
+.admin-header {
+    height: 60px;
+    background: var(--pink-2);
+    border-bottom: 1px solid var(--pink-3);
+}
+
+.admin-sidebar {
+    width: 220px;
+    background: var(--pink-2);
+    min-height: calc(100vh - 60px);
+    padding: 15px;
+}
+
+.admin-sidebar a {
+    display: block;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.admin-sidebar a.active,
+.admin-sidebar a:hover {
+    background: var(--pink-4);
+    color: white;
+}
+
+.admin-content {
+    background: var(--pink-1);
+}
+
+.table thead {
+    background: var(--pink-3);
+}
+
+.badge-status {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.badge-new { background: #ffeaea; color: #d9534f; }
+.badge-shipping { background: #eaf3ff; color: #0d6efd; }
+.badge-done { background: #eafff1; color: #198754; }
+.badge-cancel { background: #fff0f0; color: #dc3545; }

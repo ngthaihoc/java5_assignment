@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{views/admin/layout :: layout(~{::body})}">
+<body>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">Quản lý loại sách</h4>
+    <button class="btn btn-primary">+ Thêm loại sách</button>
+</div>
+
+<table class="table table-borderless bg-white shadow-sm rounded align-middle">
+    <thead class="small text-muted">
+    <tr>
+        <th>Mã loại</th>
+        <th>Tên loại sách</th>
+        <th class="text-center">Thao tác</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="c : ${categories}">
+        <td>
+            <span class="badge bg-secondary" th:text="${c.id}"></span>
+        </td>
+        <td th:text="${c.name}"></td>
+        <td class="text-center">
+            ✏️ 🗑️
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
