@@ -4,6 +4,11 @@
         th:replace="~{views/layout :: layout(~{::body})}"
 >
 <body>
+<style>
+    .group-hover:hover img {
+        transform: scale(1.05);
+    }
+</style>
 <div class="container my-4">
 
     <section id="main-slider" class="mb-5">
@@ -93,18 +98,26 @@
         <div class="row g-4">
 
             <div class="col-12 col-md-6">
-                <a href="#" class="d-block overflow-hidden rounded">
-                    <img src="img/slider_1.png" alt="">
+                <a href="#" class="d-block overflow-hidden rounded shadow-sm position-relative group-hover">
+                    <img th:src="@{/images/slider_1.png}"
+                         class="w-100"
+                         alt="Banner nhỏ 1"
+                         style="height: 200px; object-fit: cover; transition: transform 0.5s ease;">
                 </a>
             </div>
 
             <div class="col-12 col-md-6">
-                <a href="#" class="d-block overflow-hidden rounded">
-                    <img src="img/slider_2.png" alt="">
+                <a href="#" class="d-block overflow-hidden rounded shadow-sm position-relative group-hover">
+                    <img th:src="@{/images/slider_2.png}"
+                         class="w-100"
+                         alt="Banner nhỏ 2"
+                         style="height: 200px; object-fit: cover; transition: transform 0.5s ease;">
                 </a>
             </div>
 
         </div>
+
+
     </section>
 
 

@@ -9,6 +9,7 @@ public class MainPageController {
 
     @RequestMapping("/home")
     public String mainPage() {
+
         return "/components/content";
     }
 }
