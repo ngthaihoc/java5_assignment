@@ -13,4 +13,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("SELECT b FROM Book b WHERE b.category.id = ?1")
     List<Book> findByCategoryId(Long cateid, PageRequest of);
+
+    List<Book> findAllByOrderByPublishDateDesc(PageRequest of);
 }

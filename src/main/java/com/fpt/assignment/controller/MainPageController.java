@@ -38,6 +38,14 @@ public class MainPageController {
             list = bookRepo.findAll(PageRequest.of(0, 8)).getContent();
         }
 
+//      Sách mới
+        List<Book> newestList = bookRepo.findAllByOrderByPublishDateDesc(PageRequest.of(0, 5));
+        if (!newestList.isEmpty()) {
+            model.addAttribute("lastestBook", newestList.get(0));
+        }
+        if (newestList.size() > 1) {
+            model.addAttribute("relatedNewBooks", newestList.subList(1, newestList.size()));
+        }
 
         model.addAttribute("booksForYou", list);
         return "/components/content";
