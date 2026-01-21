@@ -1,11 +1,21 @@
 package com.fpt.assignment.controller;
 
+import com.fpt.assignment.repository.AccountRepository;
+import com.fpt.assignment.repository.OrderDetailRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class AccountController {
+
+    @Autowired
+    OrderDetailRepository detailRepo;
+
+    @Autowired
+    AccountRepository accRepo;
 
     @GetMapping("/account")
     public String viewAccount(Model model) {
@@ -45,7 +55,13 @@ public class AccountController {
 
     @GetMapping("/account/statistics")
     public String viewStatistics(Model model) {
-        model.addAttribute("userFullname", "Nguyễn Học");
+        model.addAttribute("categoryStats", detailRepo.reportByCategory());
+
+        model.addAttribute("topBook", detailRepo.findTopSellingBooks(PageRequest.of(0, 1)));
+        model.addAttribute("lowBook", detailRepo.findLowestSellingBooks(PageRequest.of(0, 1)));
+
+        model.addAttribute("vipCustomers", detailRepo.reportVIPCustomers(PageRequest.of(0, 10)));
+
         model.addAttribute("currentTab", "statistics");
         return "views/account";
     }
