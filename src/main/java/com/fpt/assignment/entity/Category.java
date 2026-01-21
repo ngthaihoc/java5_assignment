@@ -1,22 +1,27 @@
 package com.fpt.assignment.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
 @Entity
 @Table(name = "categories")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category {
-
     @Id
-    @Column(length = 4)
-    private String id;
+    @Column(name = "id")
+    private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "name")
     private String name;
+
+    @OneToMany
+    private List<Book> books;
+
 }

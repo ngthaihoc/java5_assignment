@@ -1,88 +1,106 @@
-<nav th:fragment="navbar" xmlns:th="http://www.thymeleaf.org" class="navbar navbar-expand-lg navbar-dark"
-     style="background-color: rgb(245, 175, 175);">
+<nav
+  th:fragment="navbar"
+  xmlns:th="http://www.thymeleaf.org"
+  class="navbar navbar-expand-lg navbar-dark"
+  style="background-color: var(--pink-4)"
+>
   <div class="container-fluid px-4">
-    <a class="navbar-brand me-5" href="#">
-      <img th:src="@{/images/LogoTwo.png}"
-           style="height: 70px; width: auto; max-width: 100%; object-fit: contain;">
+    <a class="navbar-brand me-5" href="/home">
+      <img
+        th:src="@{/images/LogoTwo.png}"
+        style="height: 70px; width: auto; max-width: 100%; object-fit: contain"
+      />
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03"
-            aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarTogglerDemo03"
+      aria-controls="navbarTogglerDemo03"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-medium">
         <li class="nav-item">
-          <a class="nav-link fs-4" href="#">Trang chủ</a>
+          <a class="nav-link fs-6" th:href="@{/home}">Trang chủ</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fs-4" href="#">Về Synkrok Books</a>
+          <a class="nav-link fs-6" href="#">Về Synkrok Books</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fs-4" href="#">Tủ sách</a>
+          <a class="nav-link fs-6" href="#">Tủ sách</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fs-4" href="#">Dịch vụ</a>
+          <a class="nav-link fs-6" href="#">Dịch vụ</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fs-4" href="#">Tin tức - Sự kiện</a>
+          <a class="nav-link fs-6" href="#">Tin tức - Sự kiện</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fs-4" href="#">Liên hệ</a>
+          <a class="nav-link fs-6" href="#">Liên hệ</a>
         </li>
       </ul>
 
-      <div class="d-flex align-items-center text-white">
+      <form action="/search" method="GET" class="d-flex align-items-center text-white">
+        <div class="input-group">
+            <input type="search" name="query" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="button-search">
 
-        <div class="dropdown">
-          <a href="#" class="text-white text-decoration-none me-4" id="searchDropdown" role="button"
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-search fs-5"></i>
-          </a>
-
-          <div class="dropdown-menu dropdown-menu-end search-dropdown-menu shadow"
-               aria-labelledby="searchDropdown" style="background-color: rgb(249, 223, 223);">
-            <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Tìm kiếm sản phẩm..."
-                     aria-label="Search">
-              <button class="btn btn-outline-dark" type="submit"><i
-                      class="fas fa-search"></i></button>
-            </form>
-          </div>
+            <button class="btn btn-light" type="submit" id="button-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
         </div>
+    </form>
 
-        <div class="border-end border-secondary mx-2" style="height: 20px;"></div>
 
-        <div class="dropdown">
-          <a href="#" class="text-white text-decoration-none ms-4 me-4" id="userDropdown" role="button"
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user fs-5"></i>
+
+        <div
+          class="border-end border-secondary mx-2"
+          style="height: 20px"
+        ></div>
+
+        <div class="dropdown" th:if="${session.user != null}">
+          <a href="#" class="text-white text-decoration-none ms-4 me-4 dropdown-toggle"
+             id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user fs-5 me-1"></i>
+            <span th:text="${session.user.fullname}">Tên User</span>
           </a>
-
-          <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown"
-              style="background-color: rgb(249, 223, 223);">
-            <li><a class="dropdown-item" href="#">Tài khoản</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+          <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="/account">Tài khoản</a></li>
+            <li th:if="${session.user.isAdmin()}"><a class="dropdown-item" href="/admin">Quản trị viên</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
           </ul>
         </div>
 
-        <div class="border-end border-secondary mx-2" style="height: 20px;"></div>
+        <div class="" th:if="${session.user == null}">
+          <a th:href="@{/login}" class="text-white text-decoration-none fw-medium">
+            Đăng nhập
+          </a>
+        </div>
 
-        <a href="#" class="text-white text-decoration-none ms-4 position-relative">
+        <div
+          class="border-end border-secondary mx-2"
+          style="height: 20px"
+        ></div>
+
+        <a
+          href="#"
+          class="text-white text-decoration-none ms-2 position-relative"
+        >
           <i class="fas fa-shopping-bag fs-5"></i>
           <span
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
-                  style="font-size: 0.6rem;">
-                            1
-                        </span>
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
+            style="font-size: 0.6rem"
+          >
+            1
+          </span>
         </a>
       </div>
-
-
     </div>
   </div>
 </nav>
