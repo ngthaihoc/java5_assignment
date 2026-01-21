@@ -15,16 +15,16 @@ public class AuthInterceptor implements HandlerInterceptor {
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     HttpSession session = request.getSession();
     Account user = (Account) session.getAttribute("user");
+    String uri = request.getRequestURI();
 
     // 1. Kiểm tra đăng nhập
-    if (user == null) {
+    if (user == null && uri.contains("/auth")) {
       session.setAttribute("back-url", request.getRequestURI());
       response.sendRedirect("/login");
       return false; // Chặn đứng request, không cho vào Controller
     }
 
     // 2. Kiểm tra quyền Admin
-    String uri = request.getRequestURI();
     if (uri.contains("/admin") && !user.isAdmin()) {
       response.sendRedirect("/login?error=denied");
       return false;
