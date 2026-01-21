@@ -4,11 +4,9 @@
         th:replace="~{views/layout :: layout(~{::body})}"
 >
 <body>
-<style>
-    .group-hover:hover img {
-        transform: scale(1.05);
-    }
-</style>
+<link th:href="@{/css/main.css}" rel="stylesheet"/>
+
+
 <div class="container my-4">
 
     <section id="main-slider" class="mb-5">
@@ -24,7 +22,7 @@
                         aria-label="Slide 3"></button>
             </div>
 
-            <div class="carousel-inner">
+            <div class="carousel-inner group-hover">
 
                 <div class="carousel-item active" data-bs-interval="2000">
                     <img th:src="@{/images/slider_3.png}" class="d-block w-100" alt="Banner 1">
@@ -52,13 +50,13 @@
 
         <div class="row g-4">
             <div class="col-6 col-md-3" th:each="book :${topBooks}">
-                <div class="card h-100 border-0 shadow-sm product-card">
+                <div class="card h-100 border-0 shadow-sm product-card border-3">
 
-                    <div class="position-relative overflow-hidden">
-                        <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-2">-20%</span>
+                    <div class="position-relative overflow-hidden group-hover">
+                        <!--                        <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-2">-20%</span>-->
                         <a th:href="@{/product-detail/{id}(id=${book.id})}">
                             <img src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
-                                 class="card-img-top p-3 rounded" th:alt="${book.title}">
+                                 class="card-img-top p-3 rounded " th:alt="${book.title}">
                         </a>
                     </div>
 
@@ -91,7 +89,6 @@
                 </div>
             </div>
 
-            <!-- Testing -->
 
         </div>
     </section>
@@ -218,25 +215,27 @@
             <h2 class="text-uppercase fw-bold">Sách Dành Cho Bạn</h2>
         </div>
 
-        <div class="d-flex justify-content-center mb-4 gap-2">
+        <div class="d-flex justify-content-start mb-4 gap-2"
+             style="overflow-x: auto; flex-wrap: nowrap; padding-bottom: 5px;">
+
             <a class="btn btn-outline-dark"
                th:href="@{/home}"
                th:classappend="${param.cateid == null } ? 'active'"
-            >Tất cả</a>
+               style="flex: 0 0 auto;">Tất cả</a>
 
             <a class="btn btn-outline-dark"
                th:each=" cate : ${categories}"
                th:href="@{/home(cateid=${cate.id})}"
                th:text="${cate.name}"
                th:classappend="${#strings.equals(param.cateid, cate.id)} ? 'active'"
-            >Tên Thể Loại</a>
+               style="flex: 0 0 auto;">Tên Thể Loại</a>
         </div>
 
         <div class="row g-4">
             <div class="col-6 col-md-3" th:each="book : ${booksForYou}">
                 <div class="card h-100 border-3 shadow-sm product-card">
 
-                    <div class="position-relative overflow-hidden">
+                    <div class="position-relative overflow-hidden group-hover">
                         <a th:href="@{/product-detail/{id}(id=${book.id})}">
                             <img src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
                                  class="card-img-top p-3 rounded" alt="Tên sách">
@@ -276,4 +275,4 @@
 </div>
 
 
-<body/>
+</body>
