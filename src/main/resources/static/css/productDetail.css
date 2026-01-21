@@ -1,0 +1,70 @@
+:root {
+    --pink-1: #FCF8F8;
+    --pink-2: #FBEFEF;
+    --pink-3: #F9DFDF;
+    --pink-4: #F5AFAF;
+}
+
+.btn-buynow {
+    background-color: var(--pink-2); 
+    color: #b13b3b;                     
+    border: 2px solid var(--pink-4);    
+    padding: 10px 24px;
+    
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.btn-buynow:hover {
+    background-color: var(--pink-4);   
+    color: #fff;
+    border-color: var(--pink-4);
+}
+
+.btn-buynow:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(245, 175, 175, 0.4);
+}
+
+.btn-addtocart {
+    background-color: #F0FFDF;    
+    color: #41644A;
+    border: 2px solid #A8DF8E;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+/* Hover */
+.btn-addtocart:hover {
+    background-color: #A8DF8E;          /* đậm hơn chút khi hover */
+    border-color: #A8DF8E;
+    color: #fff;
+}
+
+/* Click */
+.btn-addtocart:active {
+    transform: scale(0.97);
+}
+
+.img-thumbnail.thumb {
+    border: 1px solid #000;
+    width: 100px;
+    height: 100px;      /* ép vuông */
+    object-fit: contain; /* không méo ảnh */
+    cursor: pointer;
+}
+.arrow {
+    transition: transform 0.3s ease;
+}
+
+/* Khi collapse mở */
+button[aria-expanded="true"] .arrow {
+    transform: rotate(180deg);
+}
+
+.border-img {
+    border: 2px solid var(--pink-4);
+}
+
