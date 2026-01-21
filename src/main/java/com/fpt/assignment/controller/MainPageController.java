@@ -38,6 +38,7 @@ public class MainPageController {
             list = bookRepo.findAll(PageRequest.of(0, 8)).getContent();
         }
 
+
         model.addAttribute("booksForYou", list);
         return "/components/content";
     }
