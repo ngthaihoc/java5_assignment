@@ -49,14 +49,14 @@
       <form action="/search" method="GET" class="d-flex align-items-center text-white">
         <div class="input-group">
             <input type="search" name="query" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="button-search">
-            
+
             <button class="btn btn-light" type="submit" id="button-search">
               <i class="fa-solid fa-magnifying-glass"></i>
             </button>
         </div>
     </form>
 
-        
+
 
         <div
           class="border-end border-secondary mx-2"
@@ -64,7 +64,7 @@
         ></div>
 
         <div class="dropdown" th:if="${session.user != null}">
-          <a href="#" class="text-white text-decoration-none ms-4 me-4 dropdown-toggle" 
+          <a href="#" class="text-white text-decoration-none ms-4 me-4 dropdown-toggle"
              id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-user fs-5 me-1"></i>
             <span th:text="${session.user.fullname}">Tên User</span>
@@ -76,7 +76,7 @@
             <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
           </ul>
         </div>
-        
+
         <div class="" th:if="${session.user == null}">
           <a th:href="@{/login}" class="text-white text-decoration-none fw-medium">
             Đăng nhập
