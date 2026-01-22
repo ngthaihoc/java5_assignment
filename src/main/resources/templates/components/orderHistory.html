@@ -1,46 +1,57 @@
 <div th:fragment="content" xmlns:th="http://www.thymeleaf.org">
-    <h4 class="mb-4 text-uppercase fw-bold">Đơn hàng của bạn</h4>
+  <h4 class="mb-4 text-uppercase fw-bold">Đơn hàng của bạn</h4>
 
-    <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle">
-            <thead class="text-white" style="background-color: #f36f21;">
-            <tr>
-                <th scope="col">Đơn hàng</th>
-                <th scope="col">Ngày</th>
-                <th scope="col">Địa chỉ</th>
-                <th scope="col">Giá trị đơn hàng</th>
-                <th scope="col">TT thanh toán</th>
-                <th scope="col">Trạng thái</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            <tr th:each="order : ${orders}">
-                <td>
-                    <p th:text="'#' + ${order.id}" class="fw-bold text-dark">#1001</p>
-                </td>
-                <td>
-                    <p th:text="${#temporals.format(order.createDate, 'dd/MM/yyyy HH:mm')}"></p>
-                </td>
-                <td>
-                    <p th:text="${order.address}"></p>
-                </td>
-                <td class="fw-bold text-danger">
-                    <p th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
-                </td>
-                <td>
-                    <span class="badge" style="background-color: #F9DFDF; color: #d9534f;">Đã thanh toán</span>
-                </td>
-                <td>
-        <span th:classappend="${order.status == 3 ? 'text-muted' : 'text-primary'}"
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered align-middle">
+      <thead class="text-white" style="background-color: #f36f21">
+        <tr>
+          <th scope="col">Đơn hàng</th>
+          <th scope="col">Ngày</th>
+          <th scope="col">Địa chỉ</th>
+          <th scope="col">Giá trị đơn hàng</th>
+          <th scope="col">TT thanh toán</th>
+          <th scope="col">Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          th:each="order : ${orders}"
+          th:onclick="|window.location.href='@{/order/detail/{id}(id=${order.id})}'|"
+        >
+          <td>
+            <p th:text="'#' + ${order.id}" class="fw-bold text-dark">#1001</p>
+          </td>
+          <td>
+            <p
+              th:text="${#temporals.format(order.createDate, 'dd/MM/yyyy HH:mm')}"
+            ></p>
+          </td>
+          <td>
+            <p th:text="${order.address}"></p>
+          </td>
+          <td class="fw-bold text-danger">
+            <p
+              th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"
+            ></p>
+          </td>
+          <td>
+            <span
+              class="badge"
+              style="background-color: #f9dfdf; color: #d9534f"
+              >Đã thanh toán</span
+            >
+          </td>
+          <td>
+            <span
+              th:classappend="${order.status == 3 ? 'text-muted' : 'text-primary'}"
               th:text="${order.status == 0 ? 'Mới' :
                         order.status == 1 ? 'Đang giao' :
-                        order.status == 2 ? 'Hoàn tất' : 'Đã hủy'}">
-        </span>
-                </td>
-            </tr>
-
-            </tbody>
-        </table>
-    </div>
+                        order.status == 2 ? 'Hoàn tất' : 'Đã hủy'}"
+            >
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

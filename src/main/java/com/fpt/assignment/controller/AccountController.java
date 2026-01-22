@@ -1,5 +1,6 @@
 package com.fpt.assignment.controller;
 
+import com.fpt.assignment.dto.OrderHistory;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.entity.Order;
 import com.fpt.assignment.repository.AccountRepository;
@@ -83,7 +84,7 @@ public class AccountController {
     public String viewOrders(Model model, HttpSession session) {
         Account user = authService.getLoggedAccount();
 
-        List<Order> list = orderRepo.findByUsername(user.getEmail());
+        List<OrderHistory> list = orderRepo.findByUsername(user.getEmail());
         model.addAttribute("orders", list);
         model.addAttribute("currentTab", "orders");
         return "views/account";

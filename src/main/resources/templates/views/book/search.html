@@ -13,11 +13,11 @@
         </a>
         <h1 class="fw-bold text-black">Tìm kiếm</h1>
     </div>
-    <div class="container-fluid my-4">
+    <div class="search-content-wrapper my-4">
 
         <h2 class="mb-4">Trang tìm kiếm</h2>
         <!-- Hiển thị ds gợi ý khi không tìm thấy -->
-        <div class="text-center mb-4 fs-6" th:if="${bookPage.empty}">
+        <div class="text-center mb-4 fs-6 " th:if="${bookPage.empty}">
             Không tìm thấy sách phù hợp với từ khóa <strong th:text="${keyword}"></strong>
             <h3 class="mt-5 mb-4">-- Gợi ý cho bạn --</h3>
             <div class="row row-cols-5 g-3 mt-3">
