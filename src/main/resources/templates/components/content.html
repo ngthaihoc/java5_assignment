@@ -55,7 +55,7 @@
                 <div class="card h-100 border-0 shadow-sm product-card">
 
                     <div class="position-relative overflow-hidden">
-                        <a th:href="@{/product-detail/{id}(id=${book.id})}">
+                        <a th:href="@{/book/{id}(id=${book.id})}">
                             <img class="card-img-top p-3 rounded"
                                  th:src="${#strings.isEmpty(book.image)
                                   ? '/images/books/default-book.png'
@@ -69,7 +69,7 @@
                         <small class="text-muted mb-1" th:text="${book.authorName}">Tên tác giả</small>
 
                         <h5 class="card-title fs-6 fw-bold">
-                            <a th:href="@{/product/detail/{id}(id=${book.id})}" class="text-dark text-decoration-none"
+                            <a th:href="@{/book/{id}(id=${book.id})}" class="text-dark text-decoration-none"
                                th:text="${book.title}">
                                 Tên sách
                             </a>
@@ -163,7 +163,7 @@
             </div>
 
             <div class="col-12 col-md-4 text-center mb-4 mb-md-0">
-                <a th:href="@{/product-detail/{id}(id=${lastestBook.id})}">
+                <a th:href="@{/book/{id}(id=${lastestBook.id})}">
                     <img
                             th:src="${#strings.isEmpty(lastestBook.image)
                                   ? '/images/books/default-book.png'
@@ -178,7 +178,7 @@
                 <div class="row g-3">
                     <div class="col-6" th:each="related : ${relatedNewBooks}">
                         <div class="card h-100 border-0 shadow-sm">
-                            <a th:href="@{/product-detail/{id}(id=${related.id})}">
+                            <a th:href="@{/book/{id}(id=${related.id})}">
                                 <img
                                         th:src="${#strings.isEmpty(related.image)
                                   ? '/images/books/default-book.png'
