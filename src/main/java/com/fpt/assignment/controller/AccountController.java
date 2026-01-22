@@ -18,11 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Controller
@@ -59,30 +54,26 @@ public class AccountController {
     }
 
     @PostMapping("/account/update")
-    public String updateAccount(@RequestParam("fullname") String fullname,
-                                @RequestParam("photo") MultipartFile photo,
-                                HttpSession session) {
+    public String updateAccount(
+            @RequestParam("fullname") String fullname,
+            @RequestParam("photo") MultipartFile photo) {
 
         Account currentUser = authService.getLoggedAccount();
         currentUser.setFullname(fullname);
 
         if (!photo.isEmpty()) {
-            try {
-                String folderPath = "src/main/resources/static/images/";
-                File folder = new File(folderPath);
-                if (!folder.exists()) folder.mkdirs();
+            String uploadDir = System.getProperty("user.dir")
+                    + "/src/main/resources/static/images/";
 
-                String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
-                Path path = Paths.get(folderPath + fileName);
+            File savedFile = upService.save(photo, uploadDir);
 
-                Files.copy(photo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
-                currentUser.setAvatar(fileName);
-
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (savedFile != null) {
+                currentUser.setAvatar(savedFile.getName());
             }
         }
+
+        accRepo.save(currentUser);
+        System.out.println("testing avatar " + currentUser.getAvatar());
 
         return "redirect:/account";
     }

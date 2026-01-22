@@ -15,17 +15,18 @@
                         <div class="avatar-wrapper position-relative">
                             <div class="p-1 bg-white shadow-sm rounded-circle border"
                                  style="width: 160px; height: 160px;">
-                                <img th:src="${(user.avatar == null || user.avatar == '') ? '/images/defaultuser.png' : '/images/' + user.avatar}"
-                                     class="rounded-circle w-100 h-100"
-                                     style="object-fit: cover;"
-                                     alt="Ảnh đại diện">
+                                <img
+                                        th:src="${(session.user.avatar == null || user.avatar == '') ? '/images/defaultuser.png' : '/images/' + session.user.avatar}"
+
+                                        class="rounded-circle w-100 h-100"
+                                        style="object-fit: cover;"
+                                        alt="Ảnh đại diện">
                             </div>
 
                             <label for="photo"
                                    class="btn btn-primary btn-sm position-absolute rounded-circle shadow border border-2 border-white d-flex align-items-center justify-content-center"
                                    style="width: 42px; height: 42px; bottom: 5px; right: 5px; cursor: pointer; transition: all 0.3s ease;"
-                                   onmouseover="this.style.transform='scale(1.1)'"
-                                   onmouseout="this.style.transform='scale(1)'" title="Thay đổi ảnh đại diện">
+                                   title="Thay đổi ảnh đại diện">
                                 <i class="fas fa-camera fs-6"></i>
                             </label>
 

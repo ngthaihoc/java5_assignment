@@ -33,7 +33,7 @@ public class MainPageController {
 
         List<Book> list;
         if (cateid.isPresent()) {
-            list = list = bookRepo.findByCategoryId(cateid.get(), PageRequest.of(0, 8));
+            list = bookRepo.findByCategoryId(cateid.get(), PageRequest.of(0, 8));
         } else {
             list = bookRepo.findAll(PageRequest.of(0, 8)).getContent();
         }
