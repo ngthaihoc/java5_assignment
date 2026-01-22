@@ -5,8 +5,9 @@
     --pink-4: #F5AFAF;
 }
 
-.container-fluid {
+.search-content-wrapper {
     max-width: 80%;
+    margin: 0 auto;
 }
 
 /* .book-card a img {
