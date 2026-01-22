@@ -23,14 +23,15 @@ public class BookDetailController {
 
         if (book == null) {
             model.addAttribute("book", null);
-            return "views/product/productDetail";
+            return "views/book/bookdetail";
         }
 
-        model.addAttribute("book", book);
-        
-        // nếu chưa làm relatedBooks thì cho list rỗng
-        model.addAttribute("relatedBooks", List.of());
+        // List<Book> relatedBooks = bookService.findRelatedBooks(book.getCategory().getId(), book.getId());
 
-        return "views/product/productDetail";
+        model.addAttribute("book", book);
+        // model.addAttribute("relatedBooks", relatedBooks);
+
+        return "views/book/bookdetail";
     }
+
 }

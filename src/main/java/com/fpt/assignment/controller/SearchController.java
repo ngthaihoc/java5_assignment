@@ -31,12 +31,20 @@ public class SearchController {
 
         Page<Book> bookPage = bookService.searchBooks(keyword, pageable);
 
+        // Nếu không có kết quả tìm kiếm, hiển thị tất cả sách
+        Page<Book> allBooksPage = null;
+
+        if (bookPage.isEmpty()) {
+            allBooksPage = bookService.getAllBooks(pageable);
+        }
+
         model.addAttribute("bookPage", bookPage);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", bookPage.getTotalPages());
         model.addAttribute("keyword", keyword);
+        model.addAttribute("allBooksPage", allBooksPage);
 
-        return "views/product/search";
+        return "views/book/search";
     }
 
 }

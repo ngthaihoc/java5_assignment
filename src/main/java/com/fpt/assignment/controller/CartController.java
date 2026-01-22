@@ -6,11 +6,11 @@ import java.util.List;
 
 import com.fpt.assignment.entity.Account;
 import jakarta.servlet.http.HttpSession;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fpt.assignment.dto.CartItemDTO;
 import com.fpt.assignment.service.CartService;
@@ -80,5 +80,36 @@ public class CartController {
         cartService.clear(email);
 
         return "redirect:/cart";
+    }
+
+    // Thêm vào giỏ ở trang chi tiết
+    @PostMapping("/add")
+    public String addToCart(@RequestParam("bookId") Long bookId,
+                            @RequestParam(value = "quantity", defaultValue = "1") Integer quantity,
+                            @RequestParam(value = "action", defaultValue = "addToCart") String action,
+                            RedirectAttributes redirectAttributes) {
+
+        Account user = (Account) session.getAttribute("user");
+        String email = user.getEmail();
+
+        try {
+            if (quantity == null || quantity < 1) {
+                quantity = 1;
+            }
+
+            cartService.addToCart(email, bookId, quantity);
+
+            redirectAttributes.addFlashAttribute("success", "Đã thêm " + quantity + " sản phẩm vào giỏ hàng!");
+
+            if ("buyNow".equals(action)) {
+                return "redirect:/cart";
+            } else {
+                return "redirect:/book/" + bookId;
+            }
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm: " + e.getMessage());
+            return "redirect:/book/" + bookId;
+        }
     }
 }

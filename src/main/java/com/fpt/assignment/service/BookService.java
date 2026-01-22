@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +27,11 @@ public class BookService {
         return bookRepository.findAll(pageable);
     }
 
-    // public List<Book> getRelatedBooks(Long bookId) {
-    //     Book book = bookRepository.findById(bookId).orElse(null);
-    //     if (book == null || book.getCategory() == null) {
-    //         return List.of();
-    //     }
-    //     return bookRepository.findRelatedBooks(book.getCategory().getId(), bookId);
+    // public List<Book> findRelatedBooks(Long categoryId, Long bookId) {
+    //     Pageable pageable = PageRequest.of(0, 4);
+    //     return bookRepository
+    //             .findRelatedBooks(categoryId, bookId, pageable)
+    //             .getContent();
     // }
 
     public Page<Book> searchBooks(String keyword, Pageable pageable) {
