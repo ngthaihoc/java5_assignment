@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -18,6 +20,9 @@ public class CartDetail {
 
     private int quantity;
 
+    @Column(name = "added_at")
+    private LocalDateTime addedAt;
+
     @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;
@@ -26,4 +31,5 @@ public class CartDetail {
     @JoinColumn(name = "book_id")
     private Book book;
 }
+
 
