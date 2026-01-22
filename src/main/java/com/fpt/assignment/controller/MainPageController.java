@@ -33,11 +33,19 @@ public class MainPageController {
 
         List<Book> list;
         if (cateid.isPresent()) {
-            list = list = bookRepo.findByCategoryId(cateid.get(), PageRequest.of(0, 8));
+            list = bookRepo.findByCategoryId(cateid.get(), PageRequest.of(0, 8));
         } else {
             list = bookRepo.findAll(PageRequest.of(0, 8)).getContent();
         }
 
+//      Sách mới
+        List<Book> newestList = bookRepo.findAllByOrderByPublishDateDesc(PageRequest.of(0, 5));
+        if (!newestList.isEmpty()) {
+            model.addAttribute("lastestBook", newestList.get(0));
+        }
+        if (newestList.size() > 1) {
+            model.addAttribute("relatedNewBooks", newestList.subList(1, newestList.size()));
+        }
 
         model.addAttribute("booksForYou", list);
         return "/components/content";

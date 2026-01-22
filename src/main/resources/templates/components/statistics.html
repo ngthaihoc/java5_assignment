@@ -1,172 +1,56 @@
 <div th:fragment="content" xmlns:th="http://www.thymeleaf.org">
 
     <div class="mb-5">
-        <h4 class="mb-4 text-uppercase fw-bold border-start border-4 ps-3"
-            style="border-color: #f36f21 !important; color: #F5AFAF">
-            Thống kê doanh thu theo loại hàng
-        </h4>
-
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="p-3 bg-white rounded shadow-sm border-start border-4 border-success">
-                    <p class="text-muted mb-1 small">Tổng doanh thu toàn hệ thống</p>
-                    <h4 class="fw-bold text-success mb-0">1.250.000.000đ</h4>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-3 bg-white rounded shadow-sm border-start border-4 border-primary">
-                    <p class="text-muted mb-1 small">Tổng số lượng sách bán ra</p>
-                    <h4 class="fw-bold text-primary mb-0">5.420 <small class="fs-6 text-muted">cuốn</small></h4>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-3 bg-white rounded shadow-sm border-start border-4 border-warning">
-                    <p class="text-muted mb-1 small">Loại hàng bán chạy nhất</p>
-                    <h4 class="fw-bold text-warning mb-0">Kinh tế</h4>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-responsive bg-white rounded shadow-sm p-3">
-            <table class="table table-hover table-bordered align-middle text-center">
-                <thead class="text-white" style="background-color: #f36f21;">
-                <tr>
-                    <th class="text-start">Tên loại hàng</th>
-                    <th>Tổng số lượng</th>
-                    <th>Giá bán thấp nhất</th>
-                    <th>Giá bán cao nhất</th>
-                    <th>Giá trung bình</th>
-                    <th>Tổng doanh thu</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="text-start fw-bold text-primary">Sách Kinh Tế</td>
-                    <td>1,250</td>
-                    <td>99.000đ</td>
-                    <td>599.000đ</td>
-                    <td>180.000đ</td>
-                    <td class="fw-bold text-danger">450.000.000đ</td>
-                </tr>
-                <tr>
-                    <td class="text-start fw-bold text-primary">Sách Văn Học</td>
-                    <td>980</td>
-                    <td>50.000đ</td>
-                    <td>350.000đ</td>
-                    <td>120.000đ</td>
-                    <td class="fw-bold text-danger">320.000.000đ</td>
-                </tr>
-                <tr>
-                    <td class="text-start fw-bold text-primary">Sách Kỹ Năng</td>
-                    <td>850</td>
-                    <td>79.000đ</td>
-                    <td>299.000đ</td>
-                    <td>110.000đ</td>
-                    <td class="fw-bold text-danger">210.000.000đ</td>
-                </tr>
-                <tr>
-                    <td class="text-start fw-bold text-primary">Truyện Thiếu Nhi</td>
-                    <td>500</td>
-                    <td>30.000đ</td>
-                    <td>150.000đ</td>
-                    <td>65.000đ</td>
-                    <td class="fw-bold text-danger">95.000.000đ</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        <h4 class="text-uppercase fw-bold border-start border-4 ps-2 mb-3" style="border-color: #f36f21 !important;">
+            Thống kê theo loại hàng</h4>
+        <table class="table table-bordered align-middle">
+            <thead class="text-white" style="background-color: #f36f21;">
+            <tr>
+                <th>Loại sách</th>
+                <th>Doanh thu</th>
+                <th>Số lượng</th>
+                <th>Giá Cao/Thấp/TB</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${categoryStats}">
+                <td th:text="${row[0]}" class="fw-bold">Tên loại</td>
+                <td th:text="${#numbers.formatDecimal(row[1], 0, 'COMMA', 0, 'POINT')} + 'đ'"
+                    class="text-danger fw-bold">0đ
+                </td>
+                <td th:text="${row[2]}">0</td>
+                <td>
+                    <small th:text="'Max: ' + ${row[3]}"></small><br>
+                    <small th:text="'Min: ' + ${row[4]}"></small><br>
+                    <small th:text="'Avg: ' + ${#numbers.formatDecimal(row[5], 0, 'COMMA', 0, 'POINT')}"></small>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-    <div class="mb-4">
-        <h4 class="mb-4 text-uppercase fw-bold border-start border-4 ps-3"
-            style="border-color: #f36f21 !important;color: #F5AFAF">
-            Top 10 Khách hàng VIP
-        </h4>
-
-        <div class="table-responsive bg-white rounded shadow-sm p-3">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="text-white" style="background-color: #333;">
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Tên khách hàng (Username)</th>
-                    <th scope="col">Ngày mua đầu tiên</th>
-                    <th scope="col">Ngày mua gần nhất</th>
-                    <th scope="col" class="text-end">Tổng tiền đã mua</th>
-                    <th scope="col" class="text-center">Hạng</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2 border"
-                                 style="width: 35px; height: 35px;">
-                                <i class="fas fa-user text-secondary"></i>
-                            </div>
-                            <span class="fw-bold">nguyenvanA</span>
-                        </div>
-                    </td>
-                    <td>10/01/2024</td>
-                    <td>15/01/2026</td>
-                    <td class="text-end fw-bold text-danger fs-5">52.000.000đ</td>
-                    <td class="text-center"><span class="badge bg-warning text-dark"><i class="fas fa-crown me-1"></i>Kim Cương</span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>2</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2 border"
-                                 style="width: 35px; height: 35px;">
-                                <i class="fas fa-user text-secondary"></i>
-                            </div>
-                            <span class="fw-bold">tranthisangB</span>
-                        </div>
-                    </td>
-                    <td>05/03/2024</td>
-                    <td>12/01/2026</td>
-                    <td class="text-end fw-bold text-danger fs-5">48.500.000đ</td>
-                    <td class="text-center"><span class="badge bg-warning text-dark"><i class="fas fa-crown me-1"></i>Kim Cương</span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>3</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2 border"
-                                 style="width: 35px; height: 35px;">
-                                <i class="fas fa-user text-secondary"></i>
-                            </div>
-                            <span class="fw-bold">lehoangC</span>
-                        </div>
-                    </td>
-                    <td>20/06/2024</td>
-                    <td>10/01/2026</td>
-                    <td class="text-end fw-bold text-danger fs-5">35.200.000đ</td>
-                    <td class="text-center"><span class="badge bg-info text-dark">Vàng</span></td>
-                </tr>
-
-                <tr>
-                    <td>4</td>
-                    <td><span class="ms-5">phamthithanhD</span></td>
-                    <td>11/08/2024</td>
-                    <td>01/01/2026</td>
-                    <td class="text-end fw-bold">28.000.000đ</td>
-                    <td class="text-center"><span class="badge bg-info text-dark">Vàng</span></td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td><span class="ms-5">hoangvanE</span></td>
-                    <td>02/02/2025</td>
-                    <td>16/01/2026</td>
-                    <td class="text-end fw-bold">15.000.000đ</td>
-                    <td class="text-center"><span class="badge bg-secondary">Bạc</span></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+    <div>
+        <h4 class="text-uppercase fw-bold border-start border-4 ps-2 mb-3" style="border-color: #f36f21 !important;">Top
+            Khách hàng VIP</h4>
+        <table class="table table-striped">
+            <thead class="table-dark">
+            <tr>
+                <th>Họ tên</th>
+                <th>Tổng chi tiêu</th>
+                <th>Mua lần đầu</th>
+                <th>Mua lần cuối</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="vip : ${vipCustomers}">
+                <td th:text="${vip[0]}" class="fw-bold">Tên KH</td>
+                <td th:text="${#numbers.formatDecimal(vip[1], 0, 'COMMA', 0, 'POINT')} + 'đ'"
+                    class="text-success fw-bold">0đ
+                </td>
+                <td th:text="${#temporals.format(vip[2], 'dd/MM/yyyy')}">Ngày đầu</td>
+                <td th:text="${#temporals.format(vip[3], 'dd/MM/yyyy')}">Ngày cuối</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
