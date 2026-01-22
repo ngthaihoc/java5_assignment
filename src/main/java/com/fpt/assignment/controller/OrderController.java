@@ -2,7 +2,7 @@ package com.fpt.assignment.controller;
 
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.entity.Order;
-import com.fpt.assignment.entity.OrderDetails;
+import com.fpt.assignment.entity.OrderDetail;
 import com.fpt.assignment.repository.OrderDetailRepository;
 import com.fpt.assignment.repository.OrderRepository;
 import jakarta.servlet.http.HttpSession;
@@ -42,7 +42,7 @@ public class OrderController {
             return "redirect:/";
         }
 
-        List<OrderDetails> details = detailRepo.findByOrder_Id(id);
+        List<OrderDetail> details = detailRepo.findByOrder_Id(id);
 
         model.addAttribute("order", order);
         model.addAttribute("details", details);

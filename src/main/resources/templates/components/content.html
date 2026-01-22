@@ -84,7 +84,7 @@
 
                             <!--                            Thêm chức năng thêm vào giỏ hàng ở đây-->
                             <form th:action="@{/cart/add}" method="post">
-                                <input type="hidden" name="bookId" th:value="${book.id}"/>
+                                <input type="hidden" name="bookId" th:value="${book.id}" />
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-outline-dark btn-sm add-to-cart-btn">
                                         <i class="fas fa-shopping-cart me-1"></i> Thêm vào giỏ
@@ -92,7 +92,7 @@
                                 </div>
                             </form>
                             <div th:if="${success}"
-                                 class="alert alert-success alert-dismissible fade show mt-3 w-50">
+                                class="alert alert-success alert-dismissible fade show mt-3 w-50">
                                 <span th:text="${success}"></span>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
@@ -134,7 +134,7 @@
     </section>
 
 
-    <section id="new-releases" class="mb-5" th:if="${lastestBook != null }">
+    <section id="new-releases" class="mb-5">
         <div class="text-center mb-5">
             <h2 class="text-uppercase fw-bold">Sách Mới Phát Hành</h2>
             <div class="d-inline-block border-bottom border-warning border-3" style="width: 50px;"></div>
