@@ -1,23 +1,20 @@
 package com.fpt.assignment.controller;
 
-import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import com.fpt.assignment.dto.OrderForm;
+import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.entity.Order;
-import com.fpt.assignment.service.CheckoutService;
+import com.fpt.assignment.entity.OrderDetail;
+import com.fpt.assignment.repository.OrderDetailRepository;
+import com.fpt.assignment.repository.OrderRepository;
+import com.fpt.assignment.service.CartService;
 import jakarta.servlet.http.HttpSession;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import com.fpt.assignment.dto.CartItemDTO;
-import com.fpt.assignment.entity.Account;
-import com.fpt.assignment.service.CartService;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -28,47 +25,66 @@ public class CheckoutController {
     CartService cartService;
 
     @Autowired
-    CheckoutService checkoutService;
+    OrderRepository orderRepository;
 
     @Autowired
-    HttpSession session;
+    OrderDetailRepository orderDetailRepository;
 
     @GetMapping
-    public String checkout(Model model) {
+    public String checkout(Model model, HttpSession session) {
+
         Account user = (Account) session.getAttribute("user");
         if (user == null) return "redirect:/login";
 
-        List<CartItemDTO> items = cartService.getCartItems(user.getEmail());
-        if (items.isEmpty()) return "redirect:/cart";
+        OrderForm form = new OrderForm();
+        form.setEmail(user.getEmail());
+        form.setFullName(user.getFullname());
 
-        model.addAttribute("cartItems", items);
-        model.addAttribute("cartTotal", cartService.getTotal(user.getEmail()));
-        model.addAttribute("orderForm", new OrderForm());
+        model.addAttribute("orderForm", form);
+        model.addAttribute(
+                "cartItems",
+                cartService.getCartItems(user.getEmail())
+        );
+        model.addAttribute(
+                "cartTotal",
+                cartService.getTotal(user.getEmail())
+        );
 
         return "views/checkout/checkout";
     }
 
     @PostMapping
-    public String placeOrder(
-            @Valid @ModelAttribute("orderForm") OrderForm form,
-            BindingResult result,
-            RedirectAttributes redirect) {
+    public String placeOrder(@ModelAttribute OrderForm form,
+                             HttpSession session,
+                             RedirectAttributes redirect) {
 
         Account user = (Account) session.getAttribute("user");
-        List<CartItemDTO> items = cartService.getCartItems(user.getEmail());
+        if (user == null) return "redirect:/login";
 
-        if (result.hasErrors()) {
-            return "views/checkout/checkout";
-        }
+        Order order = new Order();
+        order.setAccount(user);
+        order.setAddress(form.getAddress());
+        order.setPhone(form.getPhone());
+        order.setStatus(0);
+        order.setCreatedAt(LocalDateTime.now());
 
-        checkoutService.placeOrder(user, form, items);
+        orderRepository.save(order);
 
-        // flash message
+        // LƯU CHI TIẾT ĐƠN HÀNG
+        cartService.getCartItems(user.getEmail())
+                .forEach(item -> {
+                    OrderDetail d = new OrderDetail();
+                    d.setOrder(order);
+                    d.setBook(item.getBook());
+                    d.setPrice(item.getPrice());
+                    d.setQuantity(item.getQuantity());
+                    orderDetailRepository.save(d);
+                });
+
+        // XÓA GIỎ
+        cartService.clear(user.getEmail());
+
         redirect.addFlashAttribute("orderSuccess", true);
-
         return "redirect:/cart";
     }
 }
-
-
-

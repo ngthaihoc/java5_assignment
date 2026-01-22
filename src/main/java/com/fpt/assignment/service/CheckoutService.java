@@ -30,7 +30,7 @@ public class CheckoutService {
     public void placeOrder(Account user, OrderForm form, List<CartItemDTO> items) {
 
         Order order = new Order();
-        order.setAccount(user); // user là Account (email PK)
+        order.setAccount(user); // FK → accounts.email
         order.setAddress(form.getAddress());
         order.setPhone(form.getPhone());
         order.setStatus(0);
@@ -41,11 +41,7 @@ public class CheckoutService {
         for (CartItemDTO item : items) {
             OrderDetail d = new OrderDetail();
             d.setOrder(order);
-
-            Book book = bookRepo.findById(item.getBookId())
-                    .orElseThrow();
-            d.setBook(book);
-
+            d.setBook(item.getBook());
             d.setPrice(item.getPrice());
             d.setQuantity(item.getQuantity());
 

@@ -5,23 +5,24 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "orders")
-@Data
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // FK tới accounts.email
-    @ManyToOne
-    @JoinColumn(name = "account_email")
-    private Account account;
+    @Column(name = "create_date")
+    private LocalDateTime createdAt;
 
     private String address;
     private String phone;
     private int status;
 
-    private LocalDateTime createdAt;
+    @ManyToOne
+    @JoinColumn(name = "email")
+    private Account account;
 }
+
