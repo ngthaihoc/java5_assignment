@@ -3,26 +3,26 @@ package com.fpt.assignment.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "cart")
-public class Cart {
+@Table(name = "orders")
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // FK → cart.email → accounts.email
+    @Column(name = "create_date")
+    private LocalDateTime createdAt;
+
+    private String address;
+    private String phone;
+    private int status;
+
     @ManyToOne
     @JoinColumn(name = "email")
     private Account account;
-
-    // optional: mapping ngược
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartDetail> details;
-
 }
-
 

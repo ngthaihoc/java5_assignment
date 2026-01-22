@@ -4,7 +4,7 @@
   class="navbar navbar-expand-lg navbar-dark"
   style="background-color: var(--pink-4)"
 >
-  <div class="container-fluid px-4">
+  <div class="container px-4">
     <a class="navbar-brand me-5" href="/home">
       <img
         th:src="@{/images/LogoTwo.png}"
@@ -83,23 +83,25 @@
           </a>
         </div>
 
-        <div
-          class="border-end border-secondary mx-2"
-          style="height: 20px"
-        ></div>
+        <div th:if="${session.user != null}" class="d-flex justify-center">
+            <div
+              class="border-end border-secondary mx-2"
+              style="height: 20px"
+            ></div>
 
-        <a
-          href="#"
-          class="text-white text-decoration-none ms-2 position-relative"
-        >
-          <i class="fas fa-shopping-bag fs-5"></i>
-          <span
-            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
-            style="font-size: 0.6rem"
-          >
-            1
-          </span>
-        </a>
+            <a
+              th:href="@{/cart}"
+              class="text-white text-decoration-none ms-2 position-relative"
+            >
+              <i class="fas fa-shopping-bag fs-5"></i>
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
+                style="font-size: 0.6rem"
+              >
+                1
+              </span>
+            </a>
+            </div>
       </div>
     </div>
   </div>

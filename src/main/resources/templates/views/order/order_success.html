@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{views/layout :: layout(~{::section})}">
+
+<section class="container py-5">
+
+    <h3 class="fw-bold mb-3">Chi tiết đơn hàng</h3>
+
+    <div class="mb-3">
+        <span class="text-muted">Mã đơn hàng:</span>
+        <span class="fw-bold text-primary">#<span th:text="${order.id}"></span></span>
+    </div>
+
+    <div class="mb-3">
+        <span class="text-muted">Trạng thái:</span>
+        <span class="badge bg-success">Đã đặt</span>
+    </div>
+
+    <hr>
+
+    <h5 class="fw-bold mb-3">Sản phẩm</h5>
+
+    <div th:each="d : ${details}"
+         class="d-flex justify-content-between border-bottom py-2">
+
+        <div>
+            <div class="fw-semibold" th:text="${d.book.title}"></div>
+            <small class="text-muted">
+                x<span th:text="${d.quantity}"></span>
+            </small>
+        </div>
+
+        <div class="fw-bold text-primary">
+            <span th:text="${#numbers.formatDecimal(d.price,0,'COMMA',0,'POINT')} + ' đ'"></span>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="d-flex justify-content-between fs-5 fw-bold mt-3">
+        <span>Tổng cộng:</span>
+        <span class="text-primary"
+              th:text="${#numbers.formatDecimal(order.total,0,'COMMA',0,'POINT')} + ' đ'">
+        </span>
+    </div>
+
+    <a th:href="@{/}" class="btn btn-primary mt-4">
+        Tiếp tục mua sắm nhé
+    </a>
+
+</section>
+
+</html>
