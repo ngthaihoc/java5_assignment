@@ -1,63 +1,61 @@
 package com.fpt.assignment.controller;
 
-import java.math.BigDecimal;
-import java.util.Base64;
 import java.util.List;
 
+import com.fpt.assignment.dto.CartItemDTO;
 import com.fpt.assignment.entity.Account;
+import com.fpt.assignment.service.CartService;
 import jakarta.servlet.http.HttpSession;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import com.fpt.assignment.dto.CartItemDTO;
-import com.fpt.assignment.service.CartService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/cart")
 public class CartController {
 
     @Autowired
-    HttpSession session;
+    CartService cartService;
 
     @Autowired
-    CartService cartService;
+    HttpSession session;
 
     // HIỂN THỊ GIỎ HÀNG
     @GetMapping
     public String cart(Model model) {
 
         Account user = (Account) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
         String email = user.getEmail();
 
         List<CartItemDTO> items = cartService.getCartItems(email);
 
         model.addAttribute("cartItems", items);
-        model.addAttribute("cartTotal",
-                items.stream()
-                        .map(CartItemDTO::getTotal)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add));
+        model.addAttribute("cartTotal", cartService.getTotal(email));
 
-        return "views/cart/cart";
+        return "views/cart/cart"; // cart.html
     }
-
 
     // THÊM SÁCH
     @GetMapping("/add/{id}")
-    public String add(@PathVariable Long id,
-                      @CookieValue("user") String userCookie) {
+    public String add(@PathVariable Long id) {
 
-        String email = new String(Base64.getDecoder().decode(userCookie));
-        cartService.addBook(email, id);
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
 
+        cartService.addBook(user.getEmail(), id);
         return "redirect:/cart";
     }
 
     // XÓA 1 SẢN PHẨM
     @GetMapping("/remove/{id}")
     public String remove(@PathVariable Long id) {
+
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
 
         cartService.remove(id);
         return "redirect:/cart";
@@ -68,17 +66,52 @@ public class CartController {
     public String update(@RequestParam Long id,
                          @RequestParam int qty) {
 
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
         cartService.updateQuantity(id, qty);
         return "redirect:/cart";
     }
 
     // XÓA TOÀN BỘ GIỎ
     @GetMapping("/clear")
-    public String clear(@CookieValue("user") String userCookie) {
+    public String clear() {
 
-        String email = new String(Base64.getDecoder().decode(userCookie));
-        cartService.clear(email);
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
 
+        cartService.clear(user.getEmail());
         return "redirect:/cart";
+    }
+
+    // Thêm vào giỏ ở trang chi tiết
+    @PostMapping("/add")
+    public String addToCart(@RequestParam("bookId") Long bookId,
+                            @RequestParam(value = "quantity", defaultValue = "1") Integer quantity,
+                            @RequestParam(value = "action", defaultValue = "addToCart") String action,
+                            RedirectAttributes redirectAttributes) {
+
+        Account user = (Account) session.getAttribute("user");
+        String email = user.getEmail();
+
+        try {
+            if (quantity == null || quantity < 1) {
+                quantity = 1;
+            }
+
+            cartService.addToCart(email, bookId, quantity);
+
+            redirectAttributes.addFlashAttribute("success", "Đã thêm " + quantity + " sản phẩm vào giỏ hàng!");
+
+            if ("buyNow".equals(action)) {
+                return "redirect:/cart";
+            } else {
+                return "redirect:/book/" + bookId;
+            }
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm: " + e.getMessage());
+            return "redirect:/book/" + bookId;
+        }
     }
 }

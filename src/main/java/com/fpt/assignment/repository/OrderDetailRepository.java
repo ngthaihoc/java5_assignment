@@ -2,6 +2,7 @@ package com.fpt.assignment.repository;
 
 import com.fpt.assignment.entity.OrderDetails;
 import org.springframework.data.domain.PageRequest;
+import com.fpt.assignment.entity.OrderDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -30,4 +31,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetails, Long>
             "FROM OrderDetails d GROUP BY d.order.account.fullname " +
             "ORDER BY SUM(d.price * d.quantity) DESC")
     List<Object[]> reportVIPCustomers(PageRequest of);
+
+    List<OrderDetails> findByOrder_Id(Long orderId);
 }
