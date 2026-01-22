@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,20 +16,25 @@ import java.time.LocalDateTime;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", insertable = false, updatable = false)
     private LocalDateTime createDate;
 
-    @Column(name = "address")
     private String address;
-
-    @Column(name = "status")
     private Integer status;
 
     @ManyToOne
     @JoinColumn(name = "email")
     private Account account;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderDetails> orderDetails;
+
+    public Double getTotalAmount() {
+        if (this.orderDetails == null) return 0.0;
+        return this.orderDetails.stream()
+                .mapToDouble(detail -> detail.getPrice() * detail.getQuantity())
+                .sum();
+    }
 }

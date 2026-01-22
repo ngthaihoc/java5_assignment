@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,13 +13,9 @@ import java.math.BigDecimal;
 public class OrderDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "price", precision = 10, scale = 2)
-    private BigDecimal price;
-
-    @Column(name = "quantity")
+    private Double price;
     private Integer quantity;
 
     @ManyToOne
@@ -31,5 +25,4 @@ public class OrderDetails {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
-
 }
