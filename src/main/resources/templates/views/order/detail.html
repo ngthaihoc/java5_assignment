@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{views/layout :: layout(~{::section})}">
+
+<section class="container py-5">
+
+    <h3 class="fw-bold mb-3">Chi tiết đơn hàng</h3>
+
+    <div class="mb-4">
+        <div><strong>Mã đơn:</strong> #<span th:text="${order.id}"></span></div>
+        <div><strong>Khách hàng:</strong> <span th:text="${order.account.fullName}"></span></div>
+        <div><strong>Email:</strong> <span th:text="${order.account.email}"></span></div>
+        <div><strong>Địa chỉ:</strong> <span th:text="${order.address}"></span></div>
+        <div><strong>Trạng thái:</strong>
+            <span th:if="${order.status == 0}" class="text-warning">Chờ xử lý</span>
+            <span th:if="${order.status == 1}" class="text-success">Hoàn tất</span>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Sách</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="d : ${details}">
+            <td th:text="${d.book.title}"></td>
+            <td th:text="${#numbers.formatDecimal(d.price,0,'COMMA',0,'POINT')} + ' đ'"></td>
+            <td th:text="${d.quantity}"></td>
+            <td th:text="${#numbers.formatDecimal(d.price * d.quantity,0,'COMMA',0,'POINT')} + ' đ'"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/}" class="btn btn-outline-primary mt-3">
+        ← Tiếp tục mua sắm
+    </a>
+
+</section>
+</html>

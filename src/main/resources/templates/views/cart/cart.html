@@ -21,12 +21,21 @@
 
   <div class="container">
 
+    <!-- ALERT ĐẶT HÀNG THÀNH CÔNG -->
+    <div th:if="${orderSuccess}"
+         class="alert alert-success alert-dismissible fade show position-fixed shadow"
+         style="top:20px; right:20px; z-index:9999">
+      <i class="fa-solid fa-circle-check me-2"></i>
+      Đặt hàng thành công!
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
     <!-- EMPTY CART -->
     <div th:if="${#lists.isEmpty(cartItems)}" class="text-center py-5">
       <i class="fa-solid fa-cart-shopping fs-1 text-muted mb-3"></i>
       <h5 class="fw-bold">Giỏ hàng trống</h5>
       <p class="text-muted">Hãy thêm sản phẩm để tiếp tục mua sắm</p>
-      <a th:href="@{/}" class="btn btn-primary px-4">
+      <a th:href="@{/home}" class="btn btn-primary px-4">
         Khám phá sách
       </a>
     </div>
@@ -52,31 +61,27 @@
             <!-- INFO -->
             <div class="col-md-6">
               <h6 class="fw-bold mb-1" th:text="${item.title}"></h6>
+              <div class="text-muted small" th:text="${item.author}"></div>
+              <div class="text-muted small mb-2" th:text="${item.category}"></div>
 
-              <div class="text-muted small"
-                   th:text="${item.author}"></div>
-
-              <div class="text-muted small mb-2"
-                   th:text="${item.category}"></div>
-
-              <div class="mt-2">
-                <span class="fw-bold text-primary"
-                      th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + ' đ'">
-                </span>
-              </div>
+              <span class="fw-bold text-primary"
+                    th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + ' đ'">
+              </span>
             </div>
 
             <!-- QTY -->
             <div class="col-md-3 text-end">
 
               <div class="d-flex justify-content-end align-items-center gap-2">
-                <a th:href="@{/cart/update(id=${item.cartDetailId},qty=${item.quantity-1})}"
+
+                <!-- GIẢM -->
+                <a th:href="@{/cart/update(id=${item.cartDetailId},qty=${item.quantity - 1})}"
                    class="btn btn-outline-secondary btn-sm">−</a>
 
-                <span class="fw-bold px-2"
-                      th:text="${item.quantity}"></span>
+                <span class="fw-bold px-2" th:text="${item.quantity}"></span>
 
-                <a th:href="@{/cart/update(id=${item.cartDetailId},qty=${item.quantity+1})}"
+                <!-- TĂNG -->
+                <a th:href="@{/cart/update(id=${item.cartDetailId},qty=${item.quantity + 1})}"
                    class="btn btn-outline-secondary btn-sm">+</a>
               </div>
 
@@ -119,9 +124,9 @@
             </span>
           </div>
 
-          <button class="btn btn-primary w-100 mb-2">
+          <a th:href="@{/checkout}" class="btn btn-primary w-100 mb-2">
             Tiến hành thanh toán
-          </button>
+          </a>
 
           <a th:href="@{/}" class="btn btn-outline-secondary w-100">
             Tiếp tục mua sắm

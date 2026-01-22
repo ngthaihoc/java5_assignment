@@ -35,13 +35,11 @@ public class CartController {
         List<CartItemDTO> items = cartService.getCartItems(email);
 
         model.addAttribute("cartItems", items);
-        model.addAttribute("cartTotal",
-                items.stream()
-                        .map(CartItemDTO::getTotal)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add));
+        model.addAttribute("cartTotal", cartService.getTotal(email));
 
         return "views/cart/cart";
     }
+
 
 
     // THÊM SÁCH
