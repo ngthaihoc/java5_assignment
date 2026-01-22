@@ -55,10 +55,12 @@
                 <div class="card h-100 border-0 shadow-sm product-card">
 
                     <div class="position-relative overflow-hidden">
-                        <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-2">-20%</span>
                         <a th:href="@{/product-detail/{id}(id=${book.id})}">
-                            <img src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
-                                 class="card-img-top p-3 rounded" th:alt="${book.title}">
+                            <img class="card-img-top p-3 rounded"
+                                 th:src="${#strings.isEmpty(book.image)
+                                  ? '/images/books/default-book.png'
+                                  : '/images/books/' + book.image}"
+                                 th:alt="${book.title}">
                         </a>
                     </div>
 
@@ -82,7 +84,7 @@
 
                             <!--                            Thêm chức năng thêm vào giỏ hàng ở đây-->
                             <form th:action="@{/cart/add}" method="post">
-                                <input type="hidden" name="bookId" th:value="${book.id}" />
+                                <input type="hidden" name="bookId" th:value="${book.id}"/>
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-outline-dark btn-sm add-to-cart-btn">
                                         <i class="fas fa-shopping-cart me-1"></i> Thêm vào giỏ
@@ -90,7 +92,7 @@
                                 </div>
                             </form>
                             <div th:if="${success}"
-                                class="alert alert-success alert-dismissible fade show mt-3 w-50">
+                                 class="alert alert-success alert-dismissible fade show mt-3 w-50">
                                 <span th:text="${success}"></span>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
@@ -132,7 +134,7 @@
     </section>
 
 
-    <section id="new-releases" class="mb-5">
+    <section id="new-releases" class="mb-5" th:if="${lastestBook != null }">
         <div class="text-center mb-5">
             <h2 class="text-uppercase fw-bold">Sách Mới Phát Hành</h2>
             <div class="d-inline-block border-bottom border-warning border-3" style="width: 50px;"></div>
@@ -142,15 +144,14 @@
 
             <div class="col-12 col-md-4 mb-4 mb-md-0">
                 <span class="badge bg-warning text-dark mb-2">Mới Phát Hành</span>
-                <h3 class="fw-bold display-6">Thiên Nga Đen (Tái bản 2024)</h3>
-                <p class="text-muted lead fs-6">
-                    Cuốn sách làm thay đổi tư duy quản trị rủi ro của bạn. Khám phá những sự kiện hiếm gặp nhưng
-                    có tác động cực lớn và cách chúng ta đối mặt với chúng.
-                </p>
+                <h3 class="fw-bold display-6" th:text="${lastestBook.title}">Tên Sách</h3>
+                <p class="text-muted lead fs-6" th:text="${lastestBook.description}">
+                    Chi tiết
 
                 <div class="d-flex align-items-end mb-4">
-                    <span class="fw-bold text-danger display-6 me-3">159.000đ</span>
-                    <span class="text-muted text-decoration-line-through fs-5">199.000đ</span>
+                    <span class="fw-bold text-danger display-6 me-3"
+                          th:text="${#numbers.formatDecimal(lastestBook.price, 0, 'COMMA', 0, 'POINT')} + 'đ'"
+                    >0đ</span>
                 </div>
 
                 <button class="btn btn-dark btn-lg rounded-pill px-4 w-100 shadow">
@@ -162,54 +163,32 @@
             </div>
 
             <div class="col-12 col-md-4 text-center mb-4 mb-md-0">
-                <img src="https://bizweb.dktcdn.net/thumb/large/100/197/269/products/thien-nga-den-1.png?v=1581061915587"
-                     class="img-fluid rounded w-100 shadow-lg" alt="Sách mới">
+                <a th:href="@{/product-detail/{id}(id=${lastestBook.id})}">
+                    <img
+                            th:src="${#strings.isEmpty(lastestBook.image)
+                                  ? '/images/books/default-book.png'
+                                  : '/images/books/' + lastestBook.image}"
+                         class="card-img-top p-3 rounded " th:alt="${lastestBook.title}">
+                </a>
             </div>
 
             <div class="col-12 col-md-4">
                 <h5 class="fw-bold mb-3 border-start border-4 border-warning ps-2">Có thể bạn quan tâm</h5>
 
                 <div class="row g-3">
-                    <div class="col-6">
+                    <div class="col-6" th:each="related : ${relatedNewBooks}">
                         <div class="card h-100 border-0 shadow-sm">
-                            <img src="https://bizweb.dktcdn.net/thumb/large/100/197/269/products/thien-nga-den-1.png?v=1581061915587"
-                                 class="card-img-top p-2" alt="Related 1">
+                            <a th:href="@{/product-detail/{id}(id=${related.id})}">
+                                <img
+                                        th:src="${#strings.isEmpty(related.image)
+                                  ? '/images/books/default-book.png'
+                                  : '/images/books/' + related.image}"
+                                     class="card-img-top p-3 rounded " th:alt="${related.title}">
                             <div class="card-body p-2 text-center">
-                                <h6 class="card-title fs-6 mb-1 text-truncate">Tư Duy Nhanh & Chậm</h6>
-                                <div class="fw-bold text-danger small">120.000đ</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-6">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <img src="https://bizweb.dktcdn.net/thumb/large/100/197/269/products/thien-nga-den-1.png?v=1581061915587"
-                                 class="card-img-top p-2" alt="Related 2">
-                            <div class="card-body p-2 text-center">
-                                <h6 class="card-title fs-6 mb-1 text-truncate">Nhà Giả Kim</h6>
-                                <div class="fw-bold text-danger small">89.000đ</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-6">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <img src="https://bizweb.dktcdn.net/thumb/large/100/197/269/products/thien-nga-den-1.png?v=1581061915587"
-                                 class="card-img-top p-2" alt="Related 3">
-                            <div class="card-body p-2 text-center">
-                                <h6 class="card-title fs-6 mb-1 text-truncate">Sapiens Lược Sử</h6>
-                                <div class="fw-bold text-danger small">210.000đ</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-6">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <img src="https://bizweb.dktcdn.net/thumb/large/100/197/269/products/thien-nga-den-1.png?v=1581061915587"
-                                 class="card-img-top p-2" alt="Related 4">
-                            <div class="card-body p-2 text-center">
-                                <h6 class="card-title fs-6 mb-1 text-truncate">Khởi Nghiệp 0$</h6>
-                                <div class="fw-bold text-danger small">99.000đ</div>
+                                <h6 class="card-title fs-6 mb-1 text-truncate" th:text="${related.title}">Tên sách</h6>
+                                <div class="fw-bold text-danger small"
+                                     th:text="${#numbers.formatDecimal(related.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -246,7 +225,10 @@
 
                     <div class="position-relative overflow-hidden">
                         <a th:href="@{/book/{id}(id=${book.id})}">
-                            <img src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
+                            <img
+                                    th:src="${#strings.isEmpty(book.image)
+                                  ? '/images/books/default-book.png'
+                                  : '/images/books/' + book.image}"
                                  class="card-img-top p-3 rounded" alt="Tên sách">
                         </a>
                     </div>

@@ -2,8 +2,12 @@ package com.fpt.assignment.service;
 
 import com.fpt.assignment.dto.CartItemDTO;
 import com.fpt.assignment.dto.OrderForm;
-import com.fpt.assignment.entity.*;
-import com.fpt.assignment.repository.*;
+import com.fpt.assignment.entity.Account;
+import com.fpt.assignment.entity.Order;
+import com.fpt.assignment.entity.OrderDetails;
+import com.fpt.assignment.repository.BookRepository;
+import com.fpt.assignment.repository.OrderDetailRepository;
+import com.fpt.assignment.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +34,7 @@ public class CheckoutService {
     public void placeOrder(Account user, OrderForm form, List<CartItemDTO> items) {
 
         Order order = new Order();
-        order.setAccount(user); // FK → accounts.email
+        order.setAccount(user);
         order.setAddress(form.getAddress());
         order.setPhone(form.getPhone());
         order.setStatus(0);
@@ -39,7 +43,7 @@ public class CheckoutService {
         orderRepo.save(order);
 
         for (CartItemDTO item : items) {
-            OrderDetail d = new OrderDetail();
+            OrderDetails d = new OrderDetails();
             d.setOrder(order);
             d.setBook(item.getBook());
             d.setPrice(item.getPrice());

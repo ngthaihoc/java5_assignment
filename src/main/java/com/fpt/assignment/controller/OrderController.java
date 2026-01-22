@@ -2,14 +2,16 @@ package com.fpt.assignment.controller;
 
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.entity.Order;
-import com.fpt.assignment.entity.OrderDetail;
+import com.fpt.assignment.entity.OrderDetails;
 import com.fpt.assignment.repository.OrderDetailRepository;
 import com.fpt.assignment.repository.OrderRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -40,7 +42,7 @@ public class OrderController {
             return "redirect:/";
         }
 
-        List<OrderDetail> details = detailRepo.findByOrder_Id(id);
+        List<OrderDetails> details = detailRepo.findByOrder_Id(id);
 
         model.addAttribute("order", order);
         model.addAttribute("details", details);
