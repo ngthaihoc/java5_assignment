@@ -18,8 +18,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("SELECT b FROM Book b WHERE b.category.id = ?1")
     List<Book> findByCategoryId(Long cateid, PageRequest of);
 
-    // @Query("SELECT b FROM Book b WHERE b.category.id = :categoryId AND b.id <> :bookId")
-    // Page<Book> findRelatedBooks(@Param("categoryId") Long categoryId, @Param("bookId") Long bookId, Pageable pageable);
+//     @Query("SELECT b FROM Book b WHERE b.category.id = :categoryId AND b.id <> :bookId")
+//     Page<Book> findRelatedBooks(@Param("categoryId") Long categoryId, @Param("bookId") Long bookId, Pageable pageable);
 
     Page<Book> findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(String keyword1, String keyword2, Pageable pageable);
+
+    List<Book> findAllByOrderByPublishDateDesc(PageRequest of);
 }

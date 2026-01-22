@@ -66,7 +66,7 @@ public class CheckoutController {
         order.setAddress(form.getAddress());
         order.setPhone(form.getPhone());
         order.setStatus(0);
-        order.setCreatedAt(LocalDateTime.now());
+        order.setCreateDate(LocalDateTime.now());
 
         orderRepository.save(order);
 

@@ -15,7 +15,7 @@ public class Order {
     private Long id;
 
     @Column(name = "create_date")
-    private LocalDateTime createdAt;
+    private LocalDateTime createDate;
 
     private String address;
     private String phone;
