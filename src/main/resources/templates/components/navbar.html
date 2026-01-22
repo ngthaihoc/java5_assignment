@@ -46,9 +46,10 @@
         </li>
       </ul>
 
-      <form action="/search" method="GET" class="d-flex align-items-center text-white">
+      <form th:action="@{/search}" method="GET" class="d-flex align-items-center text-white">
         <div class="input-group">
-            <input type="search" name="query" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="button-search">
+            <input type="search" name="keyword" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="button-search"
+                   th:value="${keyword}">
 
             <button class="btn btn-light" type="submit" id="button-search">
               <i class="fa-solid fa-magnifying-glass"></i>
@@ -89,19 +90,18 @@
               style="height: 20px"
             ></div>
 
-            <a
-              th:href="@{/cart}"
-              class="text-white text-decoration-none ms-2 position-relative"
-            >
-              <i class="fas fa-shopping-bag fs-5"></i>
-              <span
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
-                style="font-size: 0.6rem"
-              >
-                1
-              </span>
-            </a>
-            </div>
+        <a
+          th:href="@{/cart}"
+          class="text-white text-decoration-none ms-2 position-relative"
+        >
+          <i class="fas fa-shopping-bag fs-5"></i>
+          <span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
+            style="font-size: 0.6rem"
+          >
+            1
+          </span>
+        </a>
       </div>
     </div>
   </div>

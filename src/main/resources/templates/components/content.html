@@ -56,7 +56,7 @@
 
                     <div class="position-relative overflow-hidden">
                         <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-2">-20%</span>
-                        <a th:href="@{/product-detail/{id}(id=${book.id})}">
+                        <a th:href="@{/book/{id}(id=${book.id})}">
                             <img src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
                                  class="card-img-top p-3 rounded" th:alt="${book.title}">
                         </a>
@@ -67,7 +67,7 @@
                         <small class="text-muted mb-1" th:text="${book.authorName}">Tên tác giả</small>
 
                         <h5 class="card-title fs-6 fw-bold">
-                            <a th:href="@{/product/detail/{id}(id=${book.id})}" class="text-dark text-decoration-none"
+                            <a th:href="@{/book/{id}(id=${book.id})}" class="text-dark text-decoration-none"
                                th:text="${book.title}">
                                 Tên sách
                             </a>
@@ -81,10 +81,18 @@
 
 
                             <!--                            Thêm chức năng thêm vào giỏ hàng ở đây-->
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-outline-dark btn-sm add-to-cart-btn">
-                                    <i class="fas fa-shopping-cart me-1"></i> Thêm vào giỏ
-                                </button>
+                            <form th:action="@{/cart/add}" method="post">
+                                <input type="hidden" name="bookId" th:value="${book.id}" />
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-outline-dark btn-sm add-to-cart-btn">
+                                        <i class="fas fa-shopping-cart me-1"></i> Thêm vào giỏ
+                                    </button>
+                                </div>
+                            </form>
+                            <div th:if="${success}" 
+                                class="alert alert-success alert-dismissible fade show mt-3 w-50">
+                                <span th:text="${success}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         </div>
                     </div>
@@ -237,7 +245,7 @@
                 <div class="card h-100 border-3 shadow-sm product-card">
 
                     <div class="position-relative overflow-hidden">
-                        <a th:href="@{/product-detail/{id}(id=${book.id})}">
+                        <a th:href="@{/book/{id}(id=${book.id})}">
                             <img src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
                                  class="card-img-top p-3 rounded" alt="Tên sách">
                         </a>
@@ -262,6 +270,10 @@
                                 </button>
                             </div>
                         </div>
+                        <script th:if="${success}">
+                            alert("[[${success}]]");
+                        </script>
+
                     </div>
                 </div>
             </div>

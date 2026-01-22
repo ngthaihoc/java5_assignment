@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{views/layout :: layout(~{::body})}">
+<head>
+    
+</head>
+<body>
+    <link th:href="@{/css/bookDetail.css}" rel="stylesheet" />
+    <div class="container my-4 px-5 align-items-start">
+        <div class="row g-4" th:if="${book != null}">
+
+            <!-- Hình ảnh sản phẩm -->
+            <div class="col-md-5 pe-2">
+                <div class="border border-img rounded p-2 mb-3 text-center">
+                    <img id="mainImage"
+                        src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
+                        class="img-fluid"
+                        style="max-height: 450px;"
+                        alt="${book.title}">
+                </div>
+                <div class="d-flex gap-2">
+                    <img src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
+                        class="img-thumbnail thumb active"
+                        onclick="changeImage(this)"
+                        alt="Ảnh chính">
+
+                    <img src="https://bizweb.dktcdn.net/thumb/large/100/197/269/products/tam-ly-hoc-thanh-cong-outline-16-4-2019.jpg?v=1557728469580"
+                        class="img-thumbnail thumb"
+                        onclick="changeImage(this)"
+                        alt="Bìa sau">
+                </div>
+            </div>
+
+            <!-- Thông tin chi tiết sản phẩm -->
+            <div class="col-md-7">
+                <h2 th:text="${book.title}">TIÊU ĐỀ SÁCH</h2>
+                <p class="text-muted">Tác giả: <span th:text="${book.authorName} ?: 'Chưa cập nhật'">Abc</span></p>
+
+                <div class="d-flex align-items-end mb-1">
+                    <span class="text-danger fw-bold fs-3"
+                        th:text="${#numbers.formatInteger(book.price, 0, 'COMMA')} + 'đ'">
+                        0đ
+                    </span>
+
+                    <!-- <span class="text-muted fs-6 mb-1" th:if="${book.oldPrice != null}">
+                        Giá cũ: <del th:text="${#numbers.formatDecimal(book.oldPrice, 0, 'POINT', 'COMMA')} + 'đ'">159.000đ</del>
+                    </span> -->
+                </div>
+
+                <p>Loại sách: <strong th:text="${book.category?.name} ?: 'Chưa phân loại'">Tâm lý học</strong></p>
+                <p>Số lượng còn lại:
+                    <strong th:if="${book.quantity > 0}" class="text-success">Còn hàng</strong>
+                    <strong th:if="${book.quantity <= 0}" class="text-danger">Hết hàng</strong>
+                </p>
+
+                <form th:action="@{/cart/add}" method="post" class="mt-4">
+                    <!-- Hidden field gửi bookId -->
+                    <input type="hidden" name="bookId" th:value="${book.id}" />
+
+                    <div class="d-flex align-items-center mb-4 gap-3">
+                        <label class="fw-bold">Số lượng:</label>
+                        <input type="number" name="quantity" class="form-control w-25 text-center" 
+                            value="1" min="1" max="10" 
+                            th:max="${book.quantity}" 
+                            th:attr="max=${book.quantity}, disabled=${book.quantity <= 0}" 
+                            required />
+                    </div>
+
+                    <div class="d-flex flex-column gap-3">
+                        <button type="submit" name="action" value="addToCart" class="btn btn-addtocart fw-semibold fs-6" th:disabled="${book.quantity <= 0}">
+                            <i class="bi bi-bag"></i> Thêm vào giỏ
+                        </button>
+
+                        <button type="submit" name="action" value="buyNow"class="btn btn-buynow fw-semibold fs-6" th:disabled="${book.quantity <= 0}">
+                            <i class="bi bi-cart fw-bold"></i> Mua ngay
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Thông báo thêm thành công -->
+                <div th:if="${success}" 
+                    class="alert alert-success fade show mt-3 w-50">
+                    <span th:text="${success}"></span>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông báo nếu không tìm thấy sản phẩm -->
+        <div class="alert alert-warning mt-4" th:if="${book == null}">
+            <h4>Không tìm thấy sản phẩm</h4>
+            <p>Sản phẩm này có thể đã bị xóa hoặc không tồn tại.</p>
+        </div>
+
+        <!-- Mô tả chi tiết -->
+        <div class="detail border-top mt-4" th:if="${book != null}">
+            <button class="btn btn-link text-dark fs-3 fw-bold text-decoration-none px-0 d-flex align-items-center gap-1"
+                    data-bs-toggle="collapse" data-bs-target="#detailCollapse" aria-expanded="true">
+                Mô tả chi tiết
+                <i class="bi bi-chevron-down arrow ps-2"></i>
+            </button>
+            <div class="collapse show" id="detailCollapse">
+                <div class="fs-6 mt-2">
+                    <p>Ngày xuất bản: <span th:text="${#temporals.format(book.publishDate, 'dd/MM/yyyy')} ?: 'Chưa cập nhật'">15/06/2024</span></p>
+                    <p>Kích thước: <span th:text="${book.dimensions} ?: 'Chưa cập nhật'">14 x 20 cm</span></p>
+                    <p>Dịch giả: <span th:text="${book.translator} ?: 'Chưa có'">Nguyễn Thị Mai</span></p>
+                    <p>Loại bìa: <span th:text="${book.coverType} ?: 'Chưa cập nhật'">Mềm</span></p>
+                    <p>Số trang: <span th:text="${book.pageCount} ?: 'Chưa cập nhật'">256</span></p>
+                    <p>Nhà xuất bản: <span th:text="${book.publisher?.name} ?: 'Chưa cập nhật'">Nhà xuất bản</span></p>
+
+                    <div th:utext="${book.description} ?: 'Chưa có mô tả chi tiết.'">
+                        mô tả
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sản phẩm liên quan -->
+        <h5 class="mt-5 mb-3 fs-2 fw-bold">Sản phẩm liên quan</h5>
+        <div class="row g-3">
+            <div class="col-6 col-md-3" th:each="rel : ${relatedBooks}">
+                <div class="card border-0 h-100">
+                    <img th:src="${rel.image}"
+                        class="card-img-top w-50 mx-auto"
+                        style="height: 200px; object-fit: contain;"
+                        alt="${rel.title}">
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title flex-grow-1" th:text="${rel.title}">Tên sách</h6>
+                        <div class="d-flex align-items-end gap-3 mt-auto">
+                            <span class="text-danger fw-bold"
+                                th:text="${#numbers.formatDecimal(rel.price, 0, 'POINT', 'COMMA')} + 'đ'">
+                                0đ
+                            </span>
+                            <!-- <span class="text-muted fs-6" th:if="${rel.oldPrice != null}">
+                                <del th:text="${#numbers.formatDecimal(rel.oldPrice, 0, 'POINT', 'COMMA')} + 'đ'">0đ</del>
+                            </span> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nếu không có sản phẩm liên quan -->
+            <div class="col-12 text-center text-muted" th:if="${#lists.isEmpty(relatedBooks)}">
+                Hiện chưa có sản phẩm liên quan.
+            </div>
+        </div>
+
+    </div>
+
+<script>
+    function changeImage(element) {
+        const mainImage = document.getElementById("mainImage");
+        mainImage.src = element.src;
+
+        const thumbs = document.querySelectorAll(".thumb");
+        thumbs.forEach(img => img.classList.remove("active"));
+
+        element.classList.add("active");
+    }
+
+    setTimeout(() => {
+        const alert = document.querySelector('.alert');
+        if (alert) {
+            alert.classList.remove('show');
+            alert.classList.add('fade');
+        }
+    }, 1000);
+
+
+</script>
+
+</body>
+</html>

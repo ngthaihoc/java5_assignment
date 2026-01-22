@@ -116,4 +116,29 @@ public class CartService {
                 .map(CartItemDTO::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    public void addToCart(String email, Long bookId, int quantity) {
+        if (quantity < 1) {
+            quantity = 1;
+        }
+
+        Cart cart = cartRepository.findByAccount_Email(email);
+        if (cart == null) {
+            throw new RuntimeException("Không tìm thấy giỏ hàng của người dùng");
+        }
+
+        CartDetail detail = cartDetailRepository.findByCart_IdAndBook_Id(cart.getId(), bookId);
+
+        if (detail == null) {
+            detail = new CartDetail();
+            detail.setCart(cart);
+            detail.setBook(bookRepository.findById(bookId)
+                    .orElseThrow(() -> new RuntimeException("Sách không tồn tại")));
+            detail.setQuantity(quantity);
+        } else {
+            detail.setQuantity(detail.getQuantity() + quantity);
+        }
+
+        cartDetailRepository.save(detail);
+    }
 }
