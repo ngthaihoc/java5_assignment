@@ -46,9 +46,10 @@
         </li>
       </ul>
 
-      <form action="/search" method="GET" class="d-flex align-items-center text-white">
+      <form th:action="@{/search}" method="GET" class="d-flex align-items-center text-white">
         <div class="input-group">
-            <input type="search" name="query" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="button-search">
+            <input type="search" name="keyword" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="button-search"
+                   th:value="${keyword}">
 
             <button class="btn btn-light" type="submit" id="button-search">
               <i class="fa-solid fa-magnifying-glass"></i>

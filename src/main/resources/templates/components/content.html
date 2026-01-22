@@ -56,7 +56,7 @@
 
                     <div class="position-relative overflow-hidden">
                         <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-2">-20%</span>
-                        <a th:href="@{/product-detail/{id}(id=${book.id})}">
+                        <a th:href="@{/book/{id}(id=${book.id})}">
                             <img src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
                                  class="card-img-top p-3 rounded" th:alt="${book.title}">
                         </a>
@@ -67,7 +67,7 @@
                         <small class="text-muted mb-1" th:text="${book.authorName}">Tên tác giả</small>
 
                         <h5 class="card-title fs-6 fw-bold">
-                            <a th:href="@{/product/detail/{id}(id=${book.id})}" class="text-dark text-decoration-none"
+                            <a th:href="@{/book/{id}(id=${book.id})}" class="text-dark text-decoration-none"
                                th:text="${book.title}">
                                 Tên sách
                             </a>

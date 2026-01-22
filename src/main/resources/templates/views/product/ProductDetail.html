@@ -2,31 +2,29 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{views/layout :: layout(~{::body})}">
 <head>
-    <link th:href="@{/css/productDetail.css}" rel="stylesheet" />
+    
 </head>
 <body>
+    <link th:href="@{/css/productDetail.css}" rel="stylesheet" />
 <div class="container my-4 px-5 align-items-start">
-
     <!-- TOP - Product Main Info -->
     <div class="row g-4" th:if="${book != null}">
         <!-- Image Section -->
         <div class="col-md-5 pe-2">
             <div class="border border-img rounded p-2 mb-3 text-center">
                 <img id="mainImage"
-                     th:src="${book.image}"
+                     src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
                      class="img-fluid"
                      style="max-height: 450px;"
                      alt="${book.title}">
             </div>
             <div class="d-flex gap-2">
-                <!-- Ảnh chính -->
-                <img th:src="${book.image}"
+                <img src="https://bizweb.dktcdn.net/100/197/269/products/tam-ly-hoc-thanh-cong-304x472.jpg?v=1516592128997"
                      class="img-thumbnail thumb active"
                      onclick="changeImage(this)"
                      alt="Ảnh chính">
 
-                <!-- Ảnh phụ (bìa sau) - bạn có thể mở rộng thành List<String> images sau này -->
-                <img th:src="${book.imageBiaSau} ?: ${book.image}"
+                <img src="https://bizweb.dktcdn.net/thumb/large/100/197/269/products/tam-ly-hoc-thanh-cong-outline-16-4-2019.jpg?v=1557728469580"
                      class="img-thumbnail thumb"
                      onclick="changeImage(this)"
                      alt="Bìa sau">
@@ -40,16 +38,16 @@
 
             <div class="d-flex align-items-end gap-3 mb-1">
                 <span class="text-danger fw-bold fs-4"
-                      th:text="${#numbers.formatDecimal(book.price, 0, 'POINT', 'COMMA')} + 'đ'">
+                      th:text="${#numbers.formatInteger(book.price, 0, 'COMMA')} + 'đ'">
                     127.200đ
                 </span>
 
-                <span class="text-muted fs-6 mb-1" th:if="${book.oldPrice != null}">
+                <!-- <span class="text-muted fs-6 mb-1" th:if="${book.oldPrice != null}">
                     Giá cũ: <del th:text="${#numbers.formatDecimal(book.oldPrice, 0, 'POINT', 'COMMA')} + 'đ'">159.000đ</del>
-                </span>
+                </span> -->
             </div>
 
-            <p>Loại sách: <strong th:text="${book.categoryName} ?: 'Chưa phân loại'">Tâm lý học</strong></p>
+            <p>Loại sách: <strong th:text="${book.category?.name} ?: 'Chưa phân loại'">Tâm lý học</strong></p>
             <p>Số lượng còn lại:
                 <strong th:if="${book.quantity > 0}" class="text-success">Còn hàng</strong>
                 <strong th:if="${book.quantity <= 0}" class="text-danger">Hết hàng</strong>
@@ -63,7 +61,7 @@
 
             <div class="buy-box">
                 <button class="btn btn-buynow fw-semibold fs-5 w-50 my-3"
-                        th:disabled="${book.quantity <= 0}">
+                        th:disabled="${book.quantity <= 0}">    
                     <i class="bi bi-cart fw-bold"></i> Mua ngay
                 </button>
                 <br>
@@ -89,12 +87,13 @@
             <i class="bi bi-chevron-down arrow ps-2"></i>
         </button>
         <div class="collapse show" id="detailCollapse">
-            <div class="fs-5 mt-2">
-                <p>Ngày xuất bản: <span th:text="${#dates.format(book.publishDate, 'dd/MM/yyyy')} ?: 'Chưa cập nhật'">15/06/2024</span></p>
+            <div class="fs-6 mt-2">
+                <p>Ngày xuất bản: <span th:text="${#temporals.format(book.publishDate, 'dd/MM/yyyy')} ?: 'Chưa cập nhật'">15/06/2024</span></p>
                 <p>Kích thước: <span th:text="${book.dimensions} ?: 'Chưa cập nhật'">14 x 20 cm</span></p>
                 <p>Dịch giả: <span th:text="${book.translator} ?: 'Chưa có'">Nguyễn Thị Mai</span></p>
                 <p>Loại bìa: <span th:text="${book.coverType} ?: 'Chưa cập nhật'">Mềm</span></p>
                 <p>Số trang: <span th:text="${book.pageCount} ?: 'Chưa cập nhật'">256</span></p>
+                <p>Nhà xuất bản: <span th:text="${book.publisher?.name} ?: 'Chưa cập nhật'">Nhà xuất bản</span></p>
 
                 <!-- Nội dung mô tả -->
                 <div th:utext="${book.description} ?: 'Chưa có mô tả chi tiết.'">
@@ -103,38 +102,15 @@
             </div>
         </div>
     </div>
-
-    <!-- REVIEW (tạm giữ nguyên, sau này sẽ làm động) -->
-    <section class="product-reviews mt-5">
-        <div class="d-flex align-items-center mb-3">
-            <span class="fs-4 fw-bold">Đánh giá sản phẩm</span>
-            <span class="fs-5 text-warning ms-3">★★★★★</span>
-            <span class="ms-2 text-dark fw-semibold">4.7</span>
-            <button class="btn btn-outline-warning align-items-end ms-auto"
-                    data-bs-toggle="modal" data-bs-target="#reviewModal">
-                Viết đánh giá
-            </button>
-        </div>
-
-        <!-- Modal viết đánh giá (giữ nguyên) -->
-        <div class="modal fade" id="reviewModal" tabindex="-1">
-            <!-- ... nội dung modal giữ nguyên như file của bạn ... -->
-        </div>
-
-        <!-- Danh sách đánh giá (tạm tĩnh, sau này sẽ loop từ DB) -->
-        <div class="list-group">
-            <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                    <strong>Nguyễn Văn A</strong>
-                    <span class="text-warning">★★★★☆</span>
-                </div>
-                <p class="mb-1">Sách rất hay, dễ hiểu và ứng dụng được!</p>
-                <small class="text-muted">5 ngày trước</small>
-            </div>
-            <!-- thêm các đánh giá khác tương tự -->
-        </div>
-    </section>
-
+    <div style="background: orange; color: white; padding: 15px; margin: 20px 0;">
+    DEBUG RELATED BOOKS:
+    <br>
+    relatedBooks == null ? <span th:text="${relatedBooks == null} ? 'YES (NULL)' : 'NO'">???</span>
+    <br>
+    Số lượng: <span th:text="${relatedBooks != null} ? ${#lists.size(relatedBooks)} : '0'">0</span>
+    <br>
+    Nếu có: <span th:text="${relatedBooks != null and #lists.size(relatedBooks) > 0} ? ${relatedBooks[0].title} : 'Rỗng'">Rỗng</span>
+</div>
     <!-- RELATED PRODUCTS -->
     <h5 class="mt-5 mb-3 fs-2 fw-bold">Sản phẩm liên quan</h5>
     <div class="row g-3">

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fpt.assignment.dto.BookDetailDTO;
@@ -14,18 +16,33 @@ import com.fpt.assignment.repository.BookRepository;
 public class BookService {
    @Autowired
    private BookRepository bookRepository;
-   
+
    public Optional<BookDetailDTO> getBookDetail(Long id) {
         return bookRepository.findById(id)
                 .map(this::convertToDTO);
     }
 
-    public List<Book> getRelatedBooks(Long bookId) {
-        Book book = bookRepository.findById(bookId).orElse(null);
-        if (book == null || book.getCategory() == null) {
-            return List.of();
+    public Page<Book> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable);
+    }
+
+    // public List<Book> getRelatedBooks(Long bookId) {
+    //     Book book = bookRepository.findById(bookId).orElse(null);
+    //     if (book == null || book.getCategory() == null) {
+    //         return List.of();
+    //     }
+    //     return bookRepository.findRelatedBooks(book.getCategory().getId(), bookId);
+    // }
+
+    public Page<Book> searchBooks(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.isEmpty()) {
+            return bookRepository.findAll(pageable);
         }
-        return bookRepository.findRelatedBooks(book.getCategory().getId(), bookId);
+        return bookRepository.findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(keyword, keyword, pageable);
+    }
+
+    public Book findById(Long id) {
+        return bookRepository.findById(id).orElse(null);
     }
 
     private BookDetailDTO convertToDTO(Book book) {

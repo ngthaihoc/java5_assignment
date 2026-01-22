@@ -49,8 +49,11 @@ public class Book {
 
     private Boolean available = true;
 
-
     @ManyToOne
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
