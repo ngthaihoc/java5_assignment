@@ -1,89 +1,38 @@
-:root {
-    --primary-orange: #f97316;
-    --hover-orange: #ea580c;
-    --light-orange: #fff5ed;
-    --soft-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.cart-page {
+    background: #f9fafb;
 }
 
-/* Header: Làm cao hơn và chữ thanh thoát hơn */
-.header-gradient {
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-    padding: 80px 0; /* Tăng padding để thoáng mắt */
-    text-align: center;
-}
-/* Tìm hoặc thêm mới đoạn này vào card.css */
-.header-gradient p.text-muted {
-    color: #f37021 !important; /* Mã màu cam từ hình bạn gửi */
-    opacity: 1; /* Bỏ độ mờ mặc định của Bootstrap */
-    font-weight: 500; /* Cho chữ đậm hơn một chút cho rõ */
-}
-/* Card: Bo góc lớn hơn và đổ bóng đa lớp */
-.card-box {
-    background: white;
-    border-radius: 20px; /* Bo góc hiện đại */
-    box-shadow: var(--soft-shadow);
-    padding: 30px;
-    transition: var(--transition);
-    border: 1px solid rgba(0,0,0,0.03);
+.cart-img {
+    height: 160px;
+    object-fit: cover;
 }
 
-/* Hiệu ứng nổi lên khi di chuột (Dùng cho trang danh sách sản phẩm) */
-.card-hover:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+.price-current {
+    color: #2563eb;
+    font-weight: 700;
 }
 
-/* Bảng: Làm sạch các đường kẻ, tạo cảm giác nhẹ nhàng */
-.card-content table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 10px; /* Tạo khoảng cách giữa các hàng */
+.price-old {
+    color: #9ca3af;
+    text-decoration: line-through;
+    font-size: 0.9rem;
 }
 
-.card-content th {
-    color: #ea580c; /* Màu xám nhẹ cho tiêu đề cột */
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 10px 20px;
-    border: none;
+.qty-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 8px;
+    font-weight: bold;
 }
 
-.card-content th, 
-.table thead th, 
-.text-orange {
-    color: #ea580c !important;
+.qty-btn:hover {
+    background: #f5f5f5;
 }
 
-/* Ghi đè màu xanh của Bootstrap thành màu cam thương hiệu */
-.bg-success {
-    background-color: #ea580c !important;
-    color: white !important;
-}
 
-.card-content td {
-    background-color: #ffffff;
-    padding: 20px;
-    border-top: 1px solid #f1f5f9;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-/* Nút bấm: Thêm hiệu ứng nhấn và bóng đổ */
-.btn-main {
-    background-color: var(--primary-orange);
-    color: white !important;
-    font-weight: 600;
-    padding: 12px 28px;
-    border-radius: 12px;
-    transition: var(--transition);
-    display: inline-block;
-    border: none;
-    box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2);
-}
-
-.btn-main:hover {
-    background-color: var(--hover-orange);
-    box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.4);
-    transform: scale(1.02);
+.summary-card {
+    position: sticky;
+    top: 20px;
 }
