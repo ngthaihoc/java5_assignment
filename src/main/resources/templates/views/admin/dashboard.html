@@ -18,6 +18,60 @@
             <h4>56</h4>
         </div>
     </div>
+
+    <div class="mb-5">
+        <h4 class="text-uppercase fw-bold border-start border-4 ps-2 mb-3" style="border-color: #f36f21 !important;">
+            Thống kê theo loại hàng</h4>
+        <table class="table table-bordered align-middle">
+            <thead class="text-white" style="background-color: #f36f21;">
+            <tr>
+                <th>Loại sách</th>
+                <th>Doanh thu</th>
+                <th>Số lượng</th>
+                <th>Giá Cao/Thấp/TB</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${categoryStats}">
+                <td th:text="${row[0]}" class="fw-bold">Tên loại</td>
+                <td th:text="${#numbers.formatDecimal(row[1], 0, 'COMMA', 0, 'POINT')} + 'đ'"
+                    class="text-danger fw-bold">0đ
+                </td>
+                <td th:text="${row[2]}">0</td>
+                <td>
+                    <small th:text="'Max: ' + ${row[3]}"></small><br>
+                    <small th:text="'Min: ' + ${row[4]}"></small><br>
+                    <small th:text="'Avg: ' + ${#numbers.formatDecimal(row[5], 0, 'COMMA', 0, 'POINT')}"></small>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <h4 class="text-uppercase fw-bold border-start border-4 ps-2 mb-3" style="border-color: #f36f21 !important;">Top
+            Khách hàng VIP</h4>
+        <table class="table table-striped">
+            <thead class="table-dark">
+            <tr>
+                <th>Họ tên</th>
+                <th>Tổng chi tiêu</th>
+                <th>Mua lần đầu</th>
+                <th>Mua lần cuối</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="vip : ${vipCustomers}">
+                <td th:text="${vip[0]}" class="fw-bold">Tên KH</td>
+                <td th:text="${#numbers.formatDecimal(vip[1], 0, 'COMMA', 0, 'POINT')} + 'đ'"
+                    class="text-success fw-bold">0đ
+                </td>
+                <td th:text="${#temporals.format(vip[2], 'dd/MM/yyyy')}">Ngày đầu</td>
+                <td th:text="${#temporals.format(vip[3], 'dd/MM/yyyy')}">Ngày cuối</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 </body>

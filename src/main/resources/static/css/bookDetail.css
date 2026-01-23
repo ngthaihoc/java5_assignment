@@ -7,18 +7,18 @@
 
 .btn-buynow {
     width: 50%;
-    background-color: var(--pink-2); 
-    color: #b13b3b;                     
-    border: 2px solid var(--pink-4);    
+    background-color: var(--pink-2);
+    color: #b13b3b;
+    border: 1px solid #CD2C58;
     padding: 6px 55px;
     font-weight: 600;
     transition: all 0.25s ease;
 }
 
 .btn-buynow:hover {
-    background-color: var(--pink-4);   
+    background-color: #CD2C58;
     color: #fff;
-    border-color: var(--pink-4);
+    border-color: #CD2C58;
 }
 
 .btn-buynow:focus {
@@ -26,11 +26,22 @@
     box-shadow: 0 0 0 0.25rem rgba(245, 175, 175, 0.4);
 }
 
+/* .btn-addtocart {
+    width: 50%;
+    background-color: #F0FFDF;
+    color: #41644A;
+    border: 1px solid #A8DF8E;
+    padding: 6px 55px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+} */
+
 .btn-addtocart {
     width: 50%;
-    background-color: #F0FFDF;    
-    color: #41644A;
-    border: 2px solid #A8DF8E;
+    background-color: #BDE8F5;
+    color: #0E21A0;
+    border: 1px solid #0E21A0;
     padding: 6px 55px;
     border-radius: 8px;
     font-weight: 600;
@@ -38,8 +49,8 @@
 }
 
 .btn-addtocart:hover {
-    background-color: #A8DF8E;       
-    border-color: #A8DF8E;
+    background-color: #0E21A0;
+    border-color: #0E21A0;
     color: #fff;
 }
 
@@ -50,7 +61,7 @@
 .img-thumbnail.thumb {
     border: 1px solid #000;
     width: 100px;
-    height: 100px;    
+    height: 100px;
     object-fit: contain; /* không méo ảnh */
     cursor: pointer;
 }
@@ -65,4 +76,3 @@ button[aria-expanded="true"] .arrow {
 .border-img {
     border: 2px solid var(--pink-4);
 }
-
