@@ -1,7 +1,5 @@
 package com.fpt.assignment.controller;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +18,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class AuthController {
@@ -80,7 +77,17 @@ public class AuthController {
   }
 
   @PostMapping("/register")
-  public String createAccount(@ModelAttribute("user") RegisterForm dto) {
+  public String createAccount(@ModelAttribute("user") RegisterForm dto, Model model) {
+
+    boolean validate = authService.isEmailNotExisted(dto.getEmail());
+
+    if (!validate) {
+      model.addAttribute("error", "Email đã tồn tại");
+      dto.setEmail("");
+      model.addAttribute("registerForm", dto);
+      return "views/auth/register";
+    }
+
     String otp = authService.generateOTP();
 
     session.setAttribute("otp", otp);
@@ -150,7 +157,15 @@ public class AuthController {
   }
 
   @PostMapping("/forgot-password")
-  public String forgotPassword(@RequestParam("email") String email) {
+  public String forgotPassword(@RequestParam("email") String email, Model model) {
+
+    boolean validate = authService.isEmailNotExisted(email);
+
+    if (validate) {
+      model.addAttribute("error", "Email đã tồn tại");
+      return "views/auth/forgot";
+    }
+
     String otp = authService.generateOTP();
 
     session.setAttribute("otp", otp);
