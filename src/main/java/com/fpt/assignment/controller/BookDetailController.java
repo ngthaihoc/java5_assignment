@@ -26,10 +26,12 @@ public class BookDetailController {
             return "views/book/bookdetail";
         }
 
-        // List<Book> relatedBooks = bookService.findRelatedBooks(book.getCategory().getId(), book.getId());
+        List<Book> relatedBooks = bookService.findRelatedBooks(book.getCategory().getId(), book.getId());
+
+        System.out.println("Related books found: " + relatedBooks.size());
 
         model.addAttribute("book", book);
-        // model.addAttribute("relatedBooks", relatedBooks);
+        model.addAttribute("relatedBooks", relatedBooks);
 
         return "views/book/bookdetail";
     }

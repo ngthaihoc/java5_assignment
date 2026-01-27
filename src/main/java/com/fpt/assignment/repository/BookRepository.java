@@ -1,13 +1,15 @@
 package com.fpt.assignment.repository;
 
-import com.fpt.assignment.entity.Book;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import com.fpt.assignment.entity.Book;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
     @Override
@@ -16,14 +18,16 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("SELECT b FROM Book b WHERE b.category.id = ?1")
     List<Book> findByCategoryId(Long cateid, PageRequest of);
 
-
-    // @Query("SELECT b FROM Book b WHERE b.category.id = :categoryId AND b.id <> :bookId")
-    // Page<Book> findRelatedBooks(@Param("categoryId") Long categoryId, @Param("bookId") Long bookId, Pageable pageable);
+    @Query("SELECT b FROM Book b WHERE b.category.id = :categoryId AND b.id <> :bookId ORDER BY function('RAND')")
+    Page<Book> findRelatedBooks(@Param("categoryId") Long categoryId, @Param("bookId") Long bookId, Pageable pageable);
 
     List<Book> findAllByOrderByPublishDateDesc(PageRequest of);
 
+    Page<Book> findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(String keyword1, String keyword2,
+            Pageable pageable);
 
-    Page<Book> findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(String keyword1, String keyword2, Pageable pageable);
-
+    @Query("SELECT b FROM Book b WHERE (:keyword IS NULL OR b.title LIKE %:keyword%) AND (:category IS NULL OR b.category.id = :category) AND (:minPrice IS NULL OR b.price >= :minPrice) AND (:maxPrice IS NULL OR b.price <= :maxPrice)")
+    Page<Book> searchBooksWithFilter(String keyword, Long category, Integer minPrice, Integer maxPrice,
+            Pageable pageable);
 
 }

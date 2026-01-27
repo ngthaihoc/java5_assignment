@@ -2,15 +2,21 @@ package com.fpt.assignment.controller;
 
 import java.util.List;
 
-import com.fpt.assignment.dto.CartItemDTO;
-import com.fpt.assignment.entity.Account;
-import com.fpt.assignment.service.CartService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.fpt.assignment.dto.CartItemDTO;
+import com.fpt.assignment.entity.Account;
+import com.fpt.assignment.service.CartService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/cart")
@@ -27,7 +33,8 @@ public class CartController {
     public String cart(Model model) {
 
         Account user = (Account) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         String email = user.getEmail();
 
@@ -44,7 +51,8 @@ public class CartController {
     public String add(@PathVariable Long id) {
 
         Account user = (Account) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         cartService.addBook(user.getEmail(), id);
         return "redirect:/cart";
@@ -55,7 +63,8 @@ public class CartController {
     public String remove(@PathVariable Long id) {
 
         Account user = (Account) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         cartService.remove(id);
         return "redirect:/cart";
@@ -64,10 +73,11 @@ public class CartController {
     // CẬP NHẬT SỐ LƯỢNG
     @GetMapping("/update")
     public String update(@RequestParam Long id,
-                         @RequestParam int qty) {
+            @RequestParam int qty) {
 
         Account user = (Account) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         cartService.updateQuantity(id, qty);
         return "redirect:/cart";
@@ -78,7 +88,8 @@ public class CartController {
     public String clear() {
 
         Account user = (Account) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         cartService.clear(user.getEmail());
         return "redirect:/cart";
@@ -87,9 +98,9 @@ public class CartController {
     // Thêm vào giỏ ở trang chi tiết
     @PostMapping("/add")
     public String addToCart(@RequestParam("bookId") Long bookId,
-                            @RequestParam(value = "quantity", defaultValue = "1") Integer quantity,
-                            @RequestParam(value = "action", defaultValue = "addToCart") String action,
-                            RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "quantity", defaultValue = "1") Integer quantity,
+            @RequestParam(value = "action", defaultValue = "addToCart") String action,
+            RedirectAttributes redirectAttributes) {
 
         Account user = (Account) session.getAttribute("user");
         String email = user.getEmail();

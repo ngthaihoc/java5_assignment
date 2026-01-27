@@ -11,14 +11,19 @@ import org.springframework.stereotype.Service;
 
 import com.fpt.assignment.dto.BookDetailDTO;
 import com.fpt.assignment.entity.Book;
+import com.fpt.assignment.entity.Category;
 import com.fpt.assignment.repository.BookRepository;
+import com.fpt.assignment.repository.CategoryRepository;
 
 @Service
 public class BookService {
-   @Autowired
-   private BookRepository bookRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
-   public Optional<BookDetailDTO> getBookDetail(Long id) {
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    public Optional<BookDetailDTO> getBookDetail(Long id) {
         return bookRepository.findById(id)
                 .map(this::convertToDTO);
     }
@@ -27,18 +32,21 @@ public class BookService {
         return bookRepository.findAll(pageable);
     }
 
-    // public List<Book> findRelatedBooks(Long categoryId, Long bookId) {
-    //     Pageable pageable = PageRequest.of(0, 4);
-    //     return bookRepository
-    //             .findRelatedBooks(categoryId, bookId, pageable)
-    //             .getContent();
-    // }
+    public List<Book> findRelatedBooks(Long categoryId, Long bookId) {
+        Pageable pageable = PageRequest.of(0, 4);
+
+        System.out.println("Finding related books for categoryId: " + categoryId + ", bookId: " + bookId);
+        return bookRepository
+                .findRelatedBooks(categoryId, bookId, pageable)
+                .getContent();
+    }
 
     public Page<Book> searchBooks(String keyword, Pageable pageable) {
         if (keyword == null || keyword.isEmpty()) {
             return bookRepository.findAll(pageable);
         }
-        return bookRepository.findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(keyword, keyword, pageable);
+        return bookRepository.findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(keyword, keyword,
+                pageable);
     }
 
     public Book findById(Long id) {
@@ -65,5 +73,27 @@ public class BookService {
         dto.setCategoryName(book.getCategory() != null ? book.getCategory().getName() : "");
         dto.setPublisherName(book.getPublisher() != null ? book.getPublisher().getName() : "");
         return dto;
+    }
+
+    public List<Category> getAllCategories() {
+
+        return categoryRepository.findAll();
+    }
+
+    public Page<Book> searchBooksWithFilter(
+            String keyword,
+            Long categoryId,
+            Integer minPrice,
+            Integer maxPrice,
+            Pageable pageable) {
+        if (keyword == null || keyword.isEmpty()) {
+            keyword = "";
+        }
+        return bookRepository.searchBooksWithFilter(
+                keyword,
+                categoryId,
+                minPrice,
+                maxPrice,
+                pageable);
     }
 }
