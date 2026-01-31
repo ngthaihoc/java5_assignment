@@ -1,3 +1,14 @@
+:root {
+  --pink-1: #fcf8f8;
+  --pink-2: #fbefef;
+  --pink-3: #f9dfdf;
+  --pink-4: #f5afaf;
+}
+
+#headrAdmin{
+    background-color: var(--pink-1);
+}
+
 .admin-bg {
   background: var(--pink-1);
   min-height: 100vh;
@@ -11,7 +22,7 @@
 
 .admin-sidebar {
   width: 220px;
-  background: var(--pink-2);
+  background: var(--pink-3);
   min-height: calc(100vh - 60px);
   padding: 15px;
 }
