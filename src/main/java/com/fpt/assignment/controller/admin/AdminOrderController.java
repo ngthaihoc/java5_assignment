@@ -1,75 +1,71 @@
 package com.fpt.assignment.controller.admin;
 
+import com.fpt.assignment.entity.Order;
+import com.fpt.assignment.repository.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin/orders")
 public class AdminOrderController {
 
-    private static List<Map<String, Object>> orders = new ArrayList<>(List.of(
-            Map.of("id", 1234, "customer", "Nguyễn Văn A", "email", "nguyenvana@email.com", "date", "10/01/2026", "items", 3, "total", 247000.0, "status", 1),
-            Map.of("id", 1235, "customer", "Trần Thị B", "email", "tranthib@email.com", "date", "09/01/2026", "items", 2, "total", 168000.0, "status", 2),
-            Map.of("id", 1236, "customer", "Lê Văn C", "email", "levanc@email.com", "date", "12/01/2026", "items", 1, "total", 79000.0, "status", 0),
-            Map.of("id", 1239, "customer", "Vũ Thị F", "email", "vuthif@email.com", "date", "07/01/2026", "items", 1, "total", 95000.0, "status", 3)
-    ));
+    @Autowired 
+    private OrderRepository orderRepo;
 
     @GetMapping
     public String orders(Model model, 
                          @RequestParam(required = false) String search, 
                          @RequestParam(required = false) Integer status) {
         
-        List<Map<String, Object>> filteredOrders = orders;
+        List<Order> list = orderRepo.findAll();
 
         if (search != null && !search.isEmpty()) {
-            filteredOrders = filteredOrders.stream()
-                .filter(o -> o.get("customer").toString().toLowerCase().contains(search.toLowerCase()) || 
-                             o.get("id").toString().contains(search))
+            list = list.stream()
+                .filter(o -> o.getId().toString().contains(search) || 
+                             (o.getAccount() != null && o.getAccount().getFullname().toLowerCase().contains(search.toLowerCase())))
                 .collect(Collectors.toList());
         }
 
         if (status != null) {
-            filteredOrders = filteredOrders.stream()
-                .filter(o -> o.get("status").equals(status))
-                .collect(Collectors.toList());
+            list = list.stream().filter(o -> o.getStatus() == status).collect(Collectors.toList());
         }
 
         model.addAttribute("active", "orders");
-        model.addAttribute("orders", filteredOrders);
+        model.addAttribute("orders", list);
+        
+        model.addAttribute("priceHelper", (java.util.function.Function<Order, Double>) o -> {
+            if (o.getOrderDetails() == null) return 0.0;
+            return o.getOrderDetails().stream()
+                    .mapToDouble(d -> Double.parseDouble(d.getPrice().toString()) * d.getQuantity()).sum();
+        });
+
         return "views/admin/orders";
     }
 
-    @PostMapping("/create")
-    public String createOrder(@RequestParam String customer, @RequestParam String email, @RequestParam Double total) {
-        int newId = (int) (Math.random() * 9000) + 1000;
-        orders.add(new java.util.HashMap<>(Map.of(
-            "id", newId, "customer", customer, "email", email, "date", "31/01/2026", "items", 1, "total", total, "status", 0
-        )));
-        return "redirect:/admin/orders";
-    }
-
     @PostMapping("/update")
-    public String updateOrder(@RequestParam Integer id, @RequestParam Integer status) {
-        for (Map<String, Object> o : orders) {
-            if (o.get("id").equals(id)) {
-                java.util.Map<String, Object> mutableOrder = new java.util.HashMap<>(o);
-                mutableOrder.put("status", status);
-                orders.set(orders.indexOf(o), mutableOrder);
-                break;
-            }
+    public String updateOrder(@RequestParam Long id, 
+                             @RequestParam int status,
+                             @RequestParam String phone,
+                             @RequestParam String address) {
+        Order order = orderRepo.findById(id).orElse(null);
+        if (order != null) {
+            order.setStatus(status);
+            order.setPhone(phone);
+            order.setAddress(address);
+            orderRepo.save(order);
         }
         return "redirect:/admin/orders";
     }
 
+    // Xóa đơn hàng
     @GetMapping("/delete/{id}")
-    public String deleteOrder(@PathVariable Integer id) {
-        orders.removeIf(o -> o.get("id").equals(id));
+    public String deleteOrder(@PathVariable Long id) {
+        orderRepo.deleteById(id);
         return "redirect:/admin/orders";
     }
 }

@@ -26,7 +26,7 @@ public class Order {
     @JoinColumn(name = "email")
     private Account account;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
 }
 

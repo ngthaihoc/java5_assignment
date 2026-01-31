@@ -1,109 +1,127 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{views/admin/layout :: layout(~{::body})}">
 <body>
+    <h4 class="fw-bold mb-3">Quản lý đơn hàng từ khách hàng</h4>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Quản lý đơn hàng</h4>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addOrderModal">+ Tạo đơn hàng mới</button>
-</div>
+    <div class="bg-white rounded shadow-sm p-3 mb-3">
+        <form th:action="@{/admin/orders}" method="get" class="row g-2">
+            <div class="col-md-8">
+                <input name="search" class="form-control" th:value="${param.search}" placeholder="Tìm theo mã đơn hoặc tên khách...">
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="0" th:selected="${param.status == '0'}">Đang xử lý</option>
+                    <option value="1" th:selected="${param.status == '1'}">Đang giao</option>
+                    <option value="2" th:selected="${param.status == '2'}">Đã giao</option>
+                    <option value="3" th:selected="${param.status == '3'}">Đã hủy</option>
+                </select>
+            </div>
+            <div class="col-md-1"><button type="submit" class="btn btn-dark w-100">Lọc</button></div>
+        </form>
+    </div>
 
-<div class="bg-white rounded shadow-sm p-3 mb-3">
-    <form th:action="@{/admin/orders}" method="get" class="row g-2">
-        <div class="col-md-8">
-            <input name="search" class="form-control" placeholder="Tìm kiếm theo mã đơn hoặc tên khách hàng..." th:value="${param.search}">
-        </div>
-        <div class="col-md-3">
-            <select name="status" class="form-select">
-                <option value="">Tất cả trạng thái</option>
-                <option value="0" th:selected="${param.status == '0'}">Đang xử lý</option>
-                <option value="1" th:selected="${param.status == '1'}">Đang giao</option>
-                <option value="2" th:selected="${param.status == '2'}">Đã giao</option>
-                <option value="3" th:selected="${param.status == '3'}">Đã hủy</option>
-            </select>
-        </div>
-        <div class="col-md-1">
-            <button type="submit" class="btn btn-dark w-100">Lọc</button>
-        </div>
-    </form>
-</div>
+    <table class="table table-borderless bg-white shadow-sm rounded align-middle">
+        <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="o : ${orders}">
+                <td>#<span th:text="${o.id}"></span></td>
+                <td>
+                    <div class="fw-medium" th:text="${o.account != null ? o.account.fullname : 'N/A'}"></div>
+                    <small class="text-muted" th:text="${o.account != null ? o.account.email : ''}"></small>
+                </td>
+                <td th:text="${#temporals.format(o.createDate, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="fw-bold text-primary">
+                    <span th:text="${#numbers.formatDecimal(priceHelper.apply(o), 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                </td>
+                <td>
+                    <span th:if="${o.status == 0}" class="badge bg-secondary">Đang xử lý</span>
+                    <span th:if="${o.status == 1}" class="badge bg-warning text-dark">Đang giao</span>
+                    <span th:if="${o.status == 2}" class="badge bg-success">Đã giao</span>
+                    <span th:if="${o.status == 3}" class="badge bg-danger">Đã hủy</span>
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-outline-primary edit-order-btn" 
+                            th:data-id="${o.id}" 
+                            th:data-name="${o.account != null ? o.account.fullname : ''}"
+                            th:data-phone="${o.phone}"
+                            th:data-address="${o.address}"
+                            th:data-status="${o.status}"
+                            data-bs-toggle="modal" data-bs-target="#editOrderModal">Sửa</button>
+                    
+                    <a th:href="@{/admin/orders/delete/{id}(id=${o.id})}" 
+                       class="btn btn-sm btn-outline-danger" 
+                       onclick="return confirm('Xác nhận xóa?')">Xóa</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-<table class="table table-borderless bg-white shadow-sm rounded align-middle">
-    <thead class="small text-muted">
-    <tr>
-        <th>Mã đơn</th>
-        <th>Khách hàng</th>
-        <th>Ngày đặt</th>
-        <th>Tổng tiền</th>
-        <th>Trạng thái</th>
-        <th class="text-center">Thao tác</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="o : ${orders}">
-        <td>#<span th:text="${o.id}"></span></td>
-        <td>
-            <div class="fw-medium" th:text="${o.customer}"></div>
-            <small class="text-muted" th:text="${o.email}"></small>
-        </td>
-        <td th:text="${o.date}"></td>
-        <td class="fw-bold" th:text="${#numbers.formatDecimal(o.total,0,'COMMA',0,'POINT')} + 'đ'"></td>
-        <td>
-            <span th:if="${o.status == 0}" class="badge bg-secondary">Đang xử lý</span>
-            <span th:if="${o.status == 1}" class="badge bg-warning text-dark">Đang giao</span>
-            <span th:if="${o.status == 2}" class="badge bg-success">Đã giao</span>
-            <span th:if="${o.status == 3}" class="badge bg-danger">Đã hủy</span>
-        </td>
-        <td class="text-center">
-            <button class="btn btn-sm btn-outline-primary edit-order-btn" th:data-id="${o.id}" th:data-status="${o.status}" data-bs-toggle="modal" data-bs-target="#editOrderModal">Sửa</button>
-            <a th:href="@{/admin/orders/delete/{id}(id=${o.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xác nhận xóa?')">Xóa</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <div class="modal fade" id="editOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/admin/orders/update}" method="post">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Cập nhật đơn hàng #<span id="displayOrderId"></span></h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body row g-3">
+                        <input type="hidden" name="id" id="editOrderId">
+                        
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-muted">Tên khách hàng (Chỉ xem):</label>
+                            <input type="text" class="form-control bg-light" id="editOrderName" readonly>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Số điện thoại:</label>
+                            <input type="text" name="phone" class="form-control border-primary" id="editOrderPhone" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Trạng thái:</label>
+                            <select class="form-select border-primary" name="status" id="editOrderStatus">
+                                <option value="0">Đang xử lý</option>
+                                <option value="1">Đang giao</option>
+                                <option value="2">Đã giao</option>
+                                <option value="3">Đã hủy</option>
+                            </select>
+                        </div>
 
-<div class="modal fade" id="addOrderModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form th:action="@{/admin/orders/create}" method="post">
-                <div class="modal-header"><h5>Tạo đơn hàng mới</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <div class="mb-3"><label class="form-label">Tên khách hàng</label><input name="customer" class="form-control" required></div>
-                    <div class="mb-3"><label class="form-label">Email</label><input name="email" class="form-control" required></div>
-                    <div class="mb-3"><label class="form-label">Tổng tiền (VNĐ)</label><input type="number" name="total" class="form-control" required></div>
-                </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-primary">Tạo mới</button></div>
-            </form>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Địa chỉ nhận hàng:</label>
+                            <textarea name="address" class="form-control border-primary" id="editOrderAddress" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Lưu cập nhật</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="editOrderModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form th:action="@{/admin/orders/update}" method="post">
-                <input type="hidden" name="id" id="editOrderId">
-                <div class="modal-header"><h5>Cập nhật trạng thái</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <select class="form-select" name="status" id="editOrderStatus">
-                        <option value="0">Đang xử lý</option>
-                        <option value="1">Đang giao</option>
-                        <option value="2">Đã giao</option>
-                        <option value="3">Đã hủy</option>
-                    </select>
-                </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-primary">Lưu</button></div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-    document.querySelectorAll('.edit-order-btn').forEach(btn => {
-        btn.onclick = function() {
-            document.getElementById('editOrderId').value = this.dataset.id;
-            document.getElementById('editOrderStatus').value = this.dataset.status;
-        }
-    });
-</script>
+    <script>
+        document.querySelectorAll('.edit-order-btn').forEach(btn => {
+            btn.onclick = function() {
+                document.getElementById('editOrderId').value = this.getAttribute('data-id');
+                document.getElementById('displayOrderId').innerText = this.getAttribute('data-id');
+                document.getElementById('editOrderName').value = this.getAttribute('data-name');
+                document.getElementById('editOrderPhone').value = this.getAttribute('data-phone');
+                document.getElementById('editOrderAddress').value = this.getAttribute('data-address');
+                document.getElementById('editOrderStatus').value = this.getAttribute('data-status');
+            }
+        });
+    </script>
 </body>
 </html>
