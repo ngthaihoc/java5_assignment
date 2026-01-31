@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {
+
     @Id
     @Column(name = "id")
     private Long id;
@@ -21,7 +22,7 @@ public class Category {
     @Column(name = "name")
     private String name;
 
-    @OneToMany
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Book> books;
-
 }
+
