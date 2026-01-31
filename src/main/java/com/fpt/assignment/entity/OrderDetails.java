@@ -1,18 +1,15 @@
 package com.fpt.assignment.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "order_details")
+@Data
 public class OrderDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,4 +24,6 @@ public class OrderDetails {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
 }
+

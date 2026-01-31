@@ -1,3 +1,10 @@
+:root {
+  --pink-1: #fcf8f8;
+  --pink-2: #fbefef;
+  --pink-3: #f9dfdf;
+  --pink-4: #f5afaf;
+}
+
 .admin-bg {
   background: var(--pink-1);
   min-height: 100vh;
@@ -35,6 +42,13 @@
 .admin-content {
   background: var(--pink-1);
 }
+
+.action-icon {
+    text-decoration: none !important;
+    color: inherit;
+    cursor: pointer;
+}
+
 
 .table thead {
   background: var(--pink-3);

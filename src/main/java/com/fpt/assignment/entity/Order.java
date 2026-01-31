@@ -27,6 +27,6 @@ public class Order {
     private Account account;
 
     @OneToMany(mappedBy = "order")
-    private List<OrderDetail> orderDetails;
+    private List<OrderDetails> orderDetails;
 }
 

@@ -13,7 +13,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.account.email = ?1")
     List<Order> findByEmail(String email);
 
-    @Query("SELECT DISTINCT d.book FROM OrderDetail d WHERE d.order.account.email = ?1")
+    @Query("SELECT DISTINCT d.book FROM OrderDetails d WHERE d.order.account.email = ?1")
     List<Book> findPurchasedBooks(String email);
 
     @Query("SELECT new com.fpt.assignment.dto.OrderHistory(" +
