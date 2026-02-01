@@ -13,6 +13,7 @@
 <table class="table table-borderless bg-white shadow-sm rounded align-middle">
     <thead>
     <tr>
+        <th>#</th>
         <th>Hình ảnh</th>
         <th>Tên sách</th>
         <th>Tác giả</th>
@@ -22,17 +23,21 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="b : ${books}">
+    <tr th:each="b, stat : ${books}">
+        <td th:text="${stat.count}"></td>
+
         <td>
             <img th:src="@{'/images/books/' + ${b.image == null || #strings.isEmpty(b.image) ? 'default-book.png' : b.image}}"
                  th:alt="${b.title}"
                  style="width: 80px; height: 100px; object-fit: cover; border-radius: 4px;"
                  onerror="this.onerror=null;this.src='/images/books/default-book.png';"/>
         </td>
+
         <td th:text="${b.title}"></td>
         <td th:text="${b.authorName}"></td>
         <td th:text="${#numbers.formatDecimal(b.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
         <td th:text="${b.quantity}"></td>
+
         <td class="text-center">
             <button class="btn btn-sm btn-outline-primary me-1 edit-btn"
                     th:data-id="${b.id}"
@@ -54,6 +59,7 @@
     </tr>
     </tbody>
 </table>
+
 
 <div class="modal fade" id="addBookModal">
     <div class="modal-dialog modal-lg modal-dialog-centered">

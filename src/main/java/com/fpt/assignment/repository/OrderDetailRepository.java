@@ -1,6 +1,5 @@
 package com.fpt.assignment.repository;
 
-import com.fpt.assignment.entity.OrderDetail;
 import com.fpt.assignment.entity.OrderDetails;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,9 +27,13 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetails, Long>
     // 10 khách hàng VIP
     @Query("SELECT d.order.account.fullname, SUM(d.price * d.quantity), " +
             "MIN(d.order.createDate), MAX(d.order.createDate) " +
-            "FROM OrderDetail d GROUP BY d.order.account.fullname " +
+            "FROM OrderDetails d GROUP BY d.order.account.fullname " +
             "ORDER BY SUM(d.price * d.quantity) DESC")
     List<Object[]> reportVIPCustomers(PageRequest of);
 
+    List<OrderDetails> findByOrder_Id(Long orderId);
     List<OrderDetail> findByOrder_Id(Long orderId);
+
+    @Query("SELECT SUM(od.quantity) FROM OrderDetail od")
+    Long sumTotalBooks();
 }
