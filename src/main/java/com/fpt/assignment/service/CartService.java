@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fpt.assignment.dto.CartItemDTO;
+import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.entity.Book;
 import com.fpt.assignment.entity.Cart;
 import com.fpt.assignment.entity.CartDetail;
+import com.fpt.assignment.repository.AccountRepository;
 import com.fpt.assignment.repository.BookRepository;
 import com.fpt.assignment.repository.CartDetailRepository;
 import com.fpt.assignment.repository.CartRepository;
@@ -26,13 +28,13 @@ public class CartService {
     @Autowired
     BookRepository bookRepository;
 
-    /* LẤY DANH SÁCH GIỎ HÀNG*/
+    @Autowired
+    AccountRepository accountRepository;
+
+    /* LẤY DANH SÁCH GIỎ HÀNG */
     public List<CartItemDTO> getCartItems(String email) {
 
-        Cart cart = cartRepository.findByAccount_Email(email);
-        if (cart == null) {
-            throw new RuntimeException("Không tìm thấy giỏ hàng");
-        }
+        Cart cart = getOrCreateCart(email);
 
         return cartDetailRepository.findByCart_Id(cart.getId())
                 .stream()
@@ -48,28 +50,22 @@ public class CartService {
                     dto.setQuantity(d.getQuantity());
                     dto.setTotal(
                             d.getBook().getPrice()
-                                    .multiply(BigDecimal.valueOf(d.getQuantity()))
-                    );
+                                    .multiply(BigDecimal.valueOf(d.getQuantity())));
                     return dto;
                 })
                 .toList();
     }
 
-
     /* THÊM SÁCH VÀO GIỎ */
     public void addBook(String email, Long bookId) {
 
-        Cart cart = cartRepository.findByAccount_Email(email);
-        if (cart == null) {
-            throw new RuntimeException("Không tìm thấy giỏ hàng");
-        }
+        Cart cart = getOrCreateCart(email);
 
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sách"));
 
-        CartDetail detail =
-                cartDetailRepository.findByCart_IdAndBook_Id(
-                        cart.getId(), bookId);
+        CartDetail detail = cartDetailRepository.findByCart_IdAndBook_Id(
+                cart.getId(), bookId);
 
         if (detail == null) {
             detail = new CartDetail();
@@ -102,15 +98,13 @@ public class CartService {
         cartDetailRepository.deleteById(cartDetailId);
     }
 
-    /* XÓA TOÀN BỘ GIỎ HÀNG*/
+    /* XÓA TOÀN BỘ GIỎ HÀNG */
     public void clear(String email) {
 
-        Cart cart = cartRepository.findByAccount_Email(email);
-        if (cart == null) return;
+        Cart cart = getOrCreateCart(email);
 
         cartDetailRepository.deleteAll(
-                cartDetailRepository.findByCart_Id(cart.getId())
-        );
+                cartDetailRepository.findByCart_Id(cart.getId()));
     }
 
     /* TÍNH TỔNG TIỀN */
@@ -126,10 +120,7 @@ public class CartService {
             quantity = 1;
         }
 
-        Cart cart = cartRepository.findByAccount_Email(email);
-        if (cart == null) {
-            throw new RuntimeException("Không tìm thấy giỏ hàng của người dùng");
-        }
+        Cart cart = getOrCreateCart(email);
 
         CartDetail detail = cartDetailRepository.findByCart_IdAndBook_Id(cart.getId(), bookId);
 
@@ -144,5 +135,17 @@ public class CartService {
         }
 
         cartDetailRepository.save(detail);
+    }
+
+    private Cart getOrCreateCart(String email) {
+        Cart cart = cartRepository.findByAccount_Email(email);
+        if (cart == null) {
+            Account account = accountRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+            cart = new Cart();
+            cart.setAccount(account);
+            cartRepository.save(cart);
+        }
+        return cart;
     }
 }

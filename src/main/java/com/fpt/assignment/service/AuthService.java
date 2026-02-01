@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import com.fpt.assignment.dto.LoginForm;
 import com.fpt.assignment.dto.RegisterForm;
 import com.fpt.assignment.entity.Account;
+import com.fpt.assignment.entity.Cart;
 import com.fpt.assignment.repository.AccountRepository;
+import com.fpt.assignment.repository.CartRepository;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +23,9 @@ public class AuthService {
 
     @Autowired
     HttpSession session;
+
+    @Autowired
+    CartRepository cartRepository;
 
     @Autowired
     AccountRepository accountRepository;
@@ -43,6 +48,11 @@ public class AuthService {
         newAccount.setPassword(dto.getPassword());
 
         Account account = accountRepository.save(newAccount);
+
+        Cart cart = new Cart();
+        cart.setAccount(account);
+        cartRepository.save(cart);
+
         account.setPassword(null);
         return Optional.of(account);
     }
@@ -55,7 +65,6 @@ public class AuthService {
             throw new RuntimeException("Mật khẩu không chính xác!");
         }
 
-        // Trả về acc để Controller tự xử lý tiếp
         return acc;
     }
 

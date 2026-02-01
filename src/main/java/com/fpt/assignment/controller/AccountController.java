@@ -78,7 +78,7 @@ public class AccountController {
         accRepo.save(currentUser);
         System.out.println("testing avatar " + currentUser.getAvatar());
 
-        return "redirect:/account";
+        return "redirect:/auth/account";
     }
 
     @GetMapping("/orders")

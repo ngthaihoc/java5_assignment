@@ -1,149 +1,194 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{views/admin/layout :: layout(~{::body})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{views/admin/layout :: layout(~{::body})}">
+
 <body>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Quản lý sách</h4>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">
-        + Thêm sách mới
-    </button>
-</div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">Quản lý sách</h4>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">
+            + Thêm sách mới
+        </button>
+    </div>
 
-<table class="table table-borderless bg-white shadow-sm rounded align-middle">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Hình ảnh</th>
-        <th>Tên sách</th>
-        <th>Tác giả</th>
-        <th>Giá</th>
-        <th>Tồn kho</th>
-        <th class="text-center">Thao tác</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="b, stat : ${books}">
-        <td th:text="${stat.count}"></td>
+    <table class="table table-borderless bg-white shadow-sm rounded align-middle">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Hình ảnh</th>
+                <th>Tên sách</th>
+                <th>Tác giả</th>
+                <th>Giá</th>
+                <th>Tồn kho</th>
+                <th class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="b, stat : ${books}">
+                <td th:text="${stat.count}"></td>
 
-        <td>
-            <img th:src="@{'/images/books/' + ${b.image == null || #strings.isEmpty(b.image) ? 'default-book.png' : b.image}}"
-                 th:alt="${b.title}"
-                 style="width: 80px; height: 100px; object-fit: cover; border-radius: 4px;"
-                 onerror="this.onerror=null;this.src='/images/books/default-book.png';"/>
-        </td>
+                <td>
+                    <img th:src="@{'/images/books/' + ${b.image == null || #strings.isEmpty(b.image) ? 'default-book.png' : b.image}}"
+                        th:alt="${b.title}" style="width: 80px; height: 100px; object-fit: cover; border-radius: 4px;"
+                        onerror="this.onerror=null;this.src='/images/books/default-book.png';" />
+                </td>
 
-        <td th:text="${b.title}"></td>
-        <td th:text="${b.authorName}"></td>
-        <td th:text="${#numbers.formatDecimal(b.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
-        <td th:text="${b.quantity}"></td>
+                <td th:text="${b.title}"></td>
+                <td th:text="${b.authorName}"></td>
+                <td th:text="${#numbers.formatDecimal(b.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                <td th:text="${b.quantity}"></td>
 
-        <td class="text-center">
-            <button class="btn btn-sm btn-outline-primary me-1 edit-btn"
-                    th:data-id="${b.id}"
-                    th:data-title="${b.title}"
-                    th:data-author="${b.authorName}"
-                    th:data-price="${b.price}"
-                    th:data-quantity="${b.quantity}"
-                    th:data-image="${b.image}"
-                    data-bs-toggle="modal"
-                    data-bs-target="#editBookModal">
-                Sửa
-            </button>
-            <a th:href="@{/admin/books/delete/{id}(id=${b.id})}"
-               class="btn btn-sm btn-outline-danger"
-               onclick="return confirm('Bạn có chắc chắn muốn xóa sách này?')">
-                Xóa
-            </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-outline-primary me-1 edit-btn" th:data-id="${b.id}"
+                        th:data-title="${b.title}" th:data-author="${b.authorName}" th:data-price="${b.price}"
+                        th:data-quantity="${b.quantity}" th:data-image="${b.image}" data-bs-toggle="modal"
+                        data-bs-target="#editBookModal">
+                        Sửa
+                    </button>
+                    <a th:href="@{/admin/books/delete/{id}(id=${b.id})}" class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('Bạn có chắc chắn muốn xóa sách này?')">
+                        Xóa
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
 
-<div class="modal fade" id="addBookModal">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <form th:action="@{/admin/books/create}" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title">Thêm sách mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Tên sách</label>
-                        <input class="form-control" name="title" required/>
+    <div class="modal fade" id="addBookModal">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/admin/books/create}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thêm sách mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Tác giả</label>
-                        <input class="form-control" name="authorName" required/>
+                    <div class="modal-body row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tên sách</label>
+                            <input class="form-control" name="title" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tác giả</label>
+                            <input class="form-control" name="authorName" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Giá bán</label>
+                            <input class="form-control" name="price" type="number" step="1000" min="0" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tồn kho</label>
+                            <input class="form-control" name="quantity" type="number" min="0" />
+                        </div>
+                        <!-- New Fields -->
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày xuất bản</label>
+                            <input class="form-control" name="publishDate" type="date" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Số trang</label>
+                            <input class="form-control" name="pageCount" type="number" min="1" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kích thước</label>
+                            <input class="form-control" name="dimensions" placeholder="VD: 14x20 cm" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Dịch giả</label>
+                            <input class="form-control" name="translator" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Loại bìa</label>
+                            <select class="form-select" name="coverType">
+                                <option value="Bìa mềm">Bìa mềm</option>
+                                <option value="Bìa cứng">Bìa cứng</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-select" name="available">
+                                <option value="true">Đang bán</option>
+                                <option value="false">Ngưng bán</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Danh mục</label>
+                            <select class="form-select" name="category.id">
+                                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Nhà xuất bản</label>
+                            <select class="form-select" name="publisher.id">
+                                <option th:each="p : ${publishers}" th:value="${p.id}" th:text="${p.name}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Ảnh bìa</label>
+                            <input type="file" class="form-control" id="addImageFile" accept="image/*" />
+                            <input type="hidden" name="image" id="addImageUrl" />
+                            <img id="addPreview" class="mt-2 rounded" style="max-height: 120px; display: none;" />
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Giá bán</label>
-                        <input class="form-control" name="price" type="number"/>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary">Thêm mới</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Tồn kho</label>
-                        <input class="form-control" name="quantity" type="number"/>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Ảnh bìa</label>
-                        <input type="file" class="form-control" id="addImageFile" accept="image/*"/>
-                        <input type="hidden" name="image" id="addImageUrl"/>
-                        <img id="addPreview" class="mt-2 rounded" style="max-height: 120px; display: none;"/>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary">Thêm mới</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="editBookModal">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <form th:action="@{/admin/books/update}" method="post">
-                <input type="hidden" name="id" id="editId"/>
-                <div class="modal-header">
-                    <h5 class="modal-title">Chỉnh sửa sách</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Tên sách</label>
-                        <input class="form-control" name="title" id="editTitle"/>
+    <div class="modal fade" id="editBookModal">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/admin/books/update}" method="post">
+                    <input type="hidden" name="id" id="editId" />
+                    <div class="modal-header">
+                        <h5 class="modal-title">Chỉnh sửa sách</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Tác giả</label>
-                        <input class="form-control" name="authorName" id="editAuthor"/>
+                    <div class="modal-body row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tên sách</label>
+                            <input class="form-control" name="title" id="editTitle" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tác giả</label>
+                            <input class="form-control" name="authorName" id="editAuthor" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Giá bán</label>
+                            <input class="form-control" name="price" id="editPrice" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tồn kho</label>
+                            <input class="form-control" name="quantity" id="editQuantity" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Ảnh bìa</label>
+                            <input type="file" class="form-control" id="editImageFile" accept="image/*" />
+                            <input type="hidden" name="image" id="editImageUrl" />
+                            <img id="editPreview" class="mt-2 rounded" style="max-height: 120px; display: none;" />
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Giá bán</label>
-                        <input class="form-control" name="price" id="editPrice"/>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary">Cập nhật</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Tồn kho</label>
-                        <input class="form-control" name="quantity" id="editQuantity"/>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Ảnh bìa</label>
-                        <input type="file" class="form-control" id="editImageFile" accept="image/*"/>
-                        <input type="hidden" name="image" id="editImageUrl"/>
-                        <img id="editPreview" class="mt-2 rounded" style="max-height: 120px; display: none;"/>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary">Cập nhật</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<script th:src="@{/script/admin-books.js}"></script>
+    <script th:src="@{/script/admin-books.js}"></script>
 </body>
+
 </html>

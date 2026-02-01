@@ -115,7 +115,7 @@ public class AuthController {
     String serverOtp = (String) session.getAttribute("otp");
 
     if (session.getAttribute("otpAction") != null && session.getAttribute("otpAction") == "forgot") {
-      return "views/auth/changePassword";
+      return "views/auth/resetPassword";
     }
 
     RegisterForm registerDTO = (RegisterForm) session.getAttribute("registerDTO");
