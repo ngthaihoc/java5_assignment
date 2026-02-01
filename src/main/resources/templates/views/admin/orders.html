@@ -21,7 +21,7 @@
         </form>
     </div>
 
-    <table class="table table-borderless bg-white shadow-sm rounded align-middle">
+    <table class="table table-hover bg-white shadow-sm rounded align-middle">
         <thead>
             <tr>
                 <th>Mã đơn</th>
@@ -33,7 +33,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="o : ${orders}">
+            <tr th:each="o : ${orders}" class="order-row" th:data-id="${o.id}" style="cursor: pointer;">
                 <td>#<span th:text="${o.id}"></span></td>
                 <td>
                     <div class="fw-medium" th:text="${o.account != null ? o.account.fullname : 'N/A'}"></div>
@@ -49,22 +49,45 @@
                     <span th:if="${o.status == 2}" class="badge bg-success">Đã giao</span>
                     <span th:if="${o.status == 3}" class="badge bg-danger">Đã hủy</span>
                 </td>
-                <td class="text-center">
+                <td class="text-center" onclick="event.stopPropagation()">
                     <button class="btn btn-sm btn-outline-primary edit-order-btn" 
                             th:data-id="${o.id}" 
                             th:data-name="${o.account != null ? o.account.fullname : ''}"
-                            th:data-phone="${o.phone}"
-                            th:data-address="${o.address}"
-                            th:data-status="${o.status}"
-                            data-bs-toggle="modal" data-bs-target="#editOrderModal">Sửa</button>
-                    
+                            th:data-phone="${o.phone}" th:data-address="${o.address}"
+                            th:data-status="${o.status}" data-bs-toggle="modal" data-bs-target="#editOrderModal">Sửa</button>
                     <a th:href="@{/admin/orders/delete/{id}(id=${o.id})}" 
-                       class="btn btn-sm btn-outline-danger" 
-                       onclick="return confirm('Xác nhận xóa?')">Xóa</a>
+                       class="btn btn-sm btn-outline-danger" onclick="return confirm('Xác nhận xóa?')">Xóa</a>
                 </td>
             </tr>
         </tbody>
     </table>
+
+    <div class="modal fade" id="orderDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Chi tiết đơn hàng #<span id="dt-orderId"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th class="text-end">Giá</th>
+                                <th class="text-center">SL</th>
+                                <th class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderDetailContent"></tbody>
+                    </table>
+                    <div class="text-end mt-3">
+                        <h5 class="fw-bold">Tổng cộng: <span id="dt-totalPrice" class="text-danger"></span> <span class="text-danger">đ</span></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="editOrderModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -76,35 +99,30 @@
                     </div>
                     <div class="modal-body row g-3">
                         <input type="hidden" name="id" id="editOrderId">
-                        
                         <div class="col-12">
-                            <label class="form-label fw-bold text-muted">Tên khách hàng (Chỉ xem):</label>
+                            <label class="form-label fw-bold text-muted">Tên khách hàng:</label>
                             <input type="text" class="form-control bg-light" id="editOrderName" readonly>
                         </div>
-                        
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Số điện thoại:</label>
-                            <input type="text" name="phone" class="form-control border-primary" id="editOrderPhone" required>
+                            <input type="text" name="phone" class="form-control" id="editOrderPhone" required>
                         </div>
-                        
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Trạng thái:</label>
-                            <select class="form-select border-primary" name="status" id="editOrderStatus">
+                            <select class="form-select" name="status" id="editOrderStatus">
                                 <option value="0">Đang xử lý</option>
                                 <option value="1">Đang giao</option>
                                 <option value="2">Đã giao</option>
                                 <option value="3">Đã hủy</option>
                             </select>
                         </div>
-
                         <div class="col-12">
-                            <label class="form-label fw-bold">Địa chỉ nhận hàng:</label>
-                            <textarea name="address" class="form-control border-primary" id="editOrderAddress" rows="3" required></textarea>
+                            <label class="form-label fw-bold">Địa chỉ:</label>
+                            <textarea name="address" class="form-control" id="editOrderAddress" rows="2" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Lưu cập nhật</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                     </div>
                 </form>
             </div>
@@ -112,6 +130,33 @@
     </div>
 
     <script>
+        // Xử lý click dòng đơn hàng
+        document.querySelectorAll('.order-row').forEach(row => {
+            row.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                fetch('/admin/orders/detail/' + id)
+                    .then(res => res.json())
+                    .then(data => {
+                        let html = '';
+                        let total = 0;
+                        data.forEach(item => {
+                            total += item.total;
+                            html += `<tr>
+                                <td>${item.productName}</td>
+                                <td class="text-end">${item.price.toLocaleString('vi-VN')}</td>
+                                <td class="text-center">${item.quantity}</td>
+                                <td class="text-end fw-bold">${item.total.toLocaleString('vi-VN')}</td>
+                            </tr>`;
+                        });
+                        document.getElementById('dt-orderId').innerText = id;
+                        document.getElementById('orderDetailContent').innerHTML = html;
+                        document.getElementById('dt-totalPrice').innerText = total.toLocaleString('vi-VN');
+                        new bootstrap.Modal(document.getElementById('orderDetailModal')).show();
+                    });
+            });
+        });
+
+        // Xử lý dữ liệu Modal Sửa
         document.querySelectorAll('.edit-order-btn').forEach(btn => {
             btn.onclick = function() {
                 document.getElementById('editOrderId').value = this.getAttribute('data-id');

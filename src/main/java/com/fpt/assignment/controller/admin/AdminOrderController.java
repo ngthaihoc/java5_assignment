@@ -41,11 +41,34 @@ public class AdminOrderController {
         model.addAttribute("priceHelper", (java.util.function.Function<Order, Double>) o -> {
             if (o.getOrderDetails() == null) return 0.0;
             return o.getOrderDetails().stream()
-                    .mapToDouble(d -> Double.parseDouble(d.getPrice().toString()) * d.getQuantity()).sum();
+                    .mapToDouble(d -> d.getPrice().doubleValue() * d.getQuantity()).sum();
         });
 
         return "views/admin/orders";
     }
+
+@GetMapping("/detail/{id}")
+@ResponseBody
+public List<?> getOrderDetail(@PathVariable Long id) {
+    Order order = orderRepo.findById(id).orElse(null);
+    if (order == null || order.getOrderDetails() == null) return List.of();
+    
+    return order.getOrderDetails().stream().map(d -> {
+        java.util.Map<String, Object> map = new java.util.HashMap<>();
+        
+        if (d.getBook() != null) {
+            map.put("productName", d.getBook().getTitle());  
+        } else {
+            map.put("productName", "N/A");
+        }
+        
+        map.put("price", d.getPrice().doubleValue());
+        map.put("quantity", d.getQuantity());
+        map.put("total", d.getPrice().doubleValue() * d.getQuantity());
+        
+        return map;
+    }).collect(Collectors.toList());
+}
 
     @PostMapping("/update")
     public String updateOrder(@RequestParam Long id, 
@@ -62,7 +85,6 @@ public class AdminOrderController {
         return "redirect:/admin/orders";
     }
 
-    // Xóa đơn hàng
     @GetMapping("/delete/{id}")
     public String deleteOrder(@PathVariable Long id) {
         orderRepo.deleteById(id);
