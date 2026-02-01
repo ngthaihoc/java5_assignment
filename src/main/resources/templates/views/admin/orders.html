@@ -130,7 +130,6 @@
     </div>
 
     <script>
-        // Xử lý click dòng đơn hàng
         document.querySelectorAll('.order-row').forEach(row => {
             row.addEventListener('click', function() {
                 const id = this.getAttribute('data-id');
@@ -156,7 +155,6 @@
             });
         });
 
-        // Xử lý dữ liệu Modal Sửa
         document.querySelectorAll('.edit-order-btn').forEach(btn => {
             btn.onclick = function() {
                 document.getElementById('editOrderId').value = this.getAttribute('data-id');
