@@ -1,61 +1,93 @@
 package com.fpt.assignment.controller.admin;
 
+import com.fpt.assignment.entity.Order;
+import com.fpt.assignment.repository.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin/orders")
 public class AdminOrderController {
 
+    @Autowired 
+    private OrderRepository orderRepo;
+
     @GetMapping
-    public String orders(Model model) {
+    public String orders(Model model, 
+                         @RequestParam(required = false) String search, 
+                         @RequestParam(required = false) Integer status) {
+        
+        List<Order> list = orderRepo.findAll();
+
+        if (search != null && !search.isEmpty()) {
+            list = list.stream()
+                .filter(o -> o.getId().toString().contains(search) || 
+                             (o.getAccount() != null && o.getAccount().getFullname().toLowerCase().contains(search.toLowerCase())))
+                .collect(Collectors.toList());
+        }
+
+        if (status != null) {
+            list = list.stream().filter(o -> o.getStatus() == status).collect(Collectors.toList());
+        }
 
         model.addAttribute("active", "orders");
-
-        model.addAttribute("orders", List.of(
-                Map.of(
-                        "id", 1234,
-                        "customer", "Nguyễn Văn A",
-                        "email", "nguyenvana@email.com",
-                        "date", "10/01/2026",
-                        "items", 3,
-                        "total", 247000,
-                        "status", 1   // 1: Đang giao
-                ),
-                Map.of(
-                        "id", 1235,
-                        "customer", "Trần Thị B",
-                        "email", "tranthib@email.com",
-                        "date", "09/01/2026",
-                        "items", 2,
-                        "total", 168000,
-                        "status", 2   // 2: Đã giao
-                ),
-                Map.of(
-                        "id", 1236,
-                        "customer", "Lê Văn C",
-                        "email", "levanc@email.com",
-                        "date", "12/01/2026",
-                        "items", 1,
-                        "total", 79000,
-                        "status", 0   // 0: Đang xử lý
-                ),
-                Map.of(
-                        "id", 1239,
-                        "customer", "Vũ Thị F",
-                        "email", "vuthif@email.com",
-                        "date", "07/01/2026",
-                        "items", 1,
-                        "total", 95000,
-                        "status", 3   // 3: Đã hủy
-                )
-        ));
+        model.addAttribute("orders", list);
+        
+        model.addAttribute("priceHelper", (java.util.function.Function<Order, Double>) o -> {
+            if (o.getOrderDetails() == null) return 0.0;
+            return o.getOrderDetails().stream()
+                    .mapToDouble(d -> d.getPrice().doubleValue() * d.getQuantity()).sum();
+        });
 
         return "views/admin/orders";
+    }
+
+@GetMapping("/detail/{id}")
+@ResponseBody
+public List<?> getOrderDetail(@PathVariable Long id) {
+    Order order = orderRepo.findById(id).orElse(null);
+    if (order == null || order.getOrderDetails() == null) return List.of();
+    
+    return order.getOrderDetails().stream().map(d -> {
+        java.util.Map<String, Object> map = new java.util.HashMap<>();
+        
+        if (d.getBook() != null) {
+            map.put("productName", d.getBook().getTitle());  
+        } else {
+            map.put("productName", "N/A");
+        }
+        
+        map.put("price", d.getPrice().doubleValue());
+        map.put("quantity", d.getQuantity());
+        map.put("total", d.getPrice().doubleValue() * d.getQuantity());
+        
+        return map;
+    }).collect(Collectors.toList());
+}
+
+    @PostMapping("/update")
+    public String updateOrder(@RequestParam Long id, 
+                             @RequestParam int status,
+                             @RequestParam String phone,
+                             @RequestParam String address) {
+        Order order = orderRepo.findById(id).orElse(null);
+        if (order != null) {
+            order.setStatus(status);
+            order.setPhone(phone);
+            order.setAddress(address);
+            orderRepo.save(order);
+        }
+        return "redirect:/admin/orders";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteOrder(@PathVariable Long id) {
+        orderRepo.deleteById(id);
+        return "redirect:/admin/orders";
     }
 }
