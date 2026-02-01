@@ -36,4 +36,10 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetails, Long>
 
         @Query("SELECT SUM(od.quantity) FROM OrderDetails od")
         Long sumTotalBooks();
+
+        @Query("SELECT d.book, SUM(d.quantity) FROM OrderDetails d " +
+                        "WHERE d.book.title LIKE %:keyword% " +
+                        "GROUP BY d.book ORDER BY SUM(d.quantity) DESC")
+        List<Object[]> findSaleStatsByKeyword(
+                        @org.springframework.web.bind.annotation.RequestParam("keyword") String keyword);
 }

@@ -25,7 +25,8 @@ public class AdminDashboardController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model,
-                            @RequestParam(value = "tab", required = false, defaultValue = "category") String tab) {
+            @RequestParam(value = "tab", required = false, defaultValue = "category") String tab,
+            @RequestParam(value = "keyword", required = false) String keyword) {
 
         model.addAttribute("active", "dashboard");
 
@@ -37,19 +38,21 @@ public class AdminDashboardController {
 
         model.addAttribute("totalBook", bookRepository.count());
 
-
         Long totalBooks = detailRepo.sumTotalBooks();
         long totalBookCount = totalBooks == null ? 0 : totalBooks;
 
         model.addAttribute("totalBooks", totalBookCount);
 
-
         model.addAttribute("tab", tab);
-
 
         if ("product".equals(tab)) {
             model.addAttribute("topBook", detailRepo.findTopSellingBooks(PageRequest.of(0, 5)));
             model.addAttribute("lowBook", detailRepo.findLowestSellingBooks(PageRequest.of(0, 5)));
+
+            if (keyword != null && !keyword.isBlank()) {
+                model.addAttribute("searchedBooks", detailRepo.findSaleStatsByKeyword(keyword));
+                model.addAttribute("keyword", keyword);
+            }
         } else if ("customer".equals(tab)) {
             model.addAttribute("vipCustomers", detailRepo.reportVIPCustomers(PageRequest.of(0, 10)));
         } else {

@@ -2,6 +2,8 @@ package com.fpt.assignment.controller.admin;
 
 import com.fpt.assignment.entity.Book;
 import com.fpt.assignment.repository.BookRepository;
+import com.fpt.assignment.repository.CategoryRepository;
+import com.fpt.assignment.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,12 +14,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminBookController {
     final BookRepository bookRepository;
-
+    final CategoryRepository categoryRepository;
+    final PublisherRepository publisherRepository;
 
     @GetMapping
     public String books(Model model) {
         model.addAttribute("active", "books");
         model.addAttribute("books", bookRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("publishers", publisherRepository.findAll());
         return "views/admin/books";
     }
 
@@ -32,7 +37,6 @@ public class AdminBookController {
         bookRepository.save(book);
         return "redirect:/admin/books";
     }
-
 
     @GetMapping("/delete/{id}")
     public String deleteBook(@PathVariable("id") Long id) {
