@@ -18,5 +18,6 @@ public interface AccountRepository extends JpaRepository<Account, String> {
         where a.admin = false
     """)
     List<Account> findAllCustomers();
+    long countByAdminFalse();
 
 }
