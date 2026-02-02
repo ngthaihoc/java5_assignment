@@ -52,6 +52,13 @@
   background: var(--pink-1);
 }
 
+.action-icon {
+    text-decoration: none !important;
+    color: inherit;
+    cursor: pointer;
+}
+
+
 .table thead {
   background: var(--pink-3);
 }
