@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.account.email = ?1")
@@ -25,6 +24,4 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "WHERE o.account.email = ?1 " +
             "GROUP BY o.id, o.createDate, o.address, o.status")
     List<OrderHistory> findByUsername(String email);
-
-
 }
