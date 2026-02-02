@@ -1,3 +1,14 @@
+:root {
+  --pink-1: #fcf8f8;
+  --pink-2: #fbefef;
+  --pink-3: #f9dfdf;
+  --pink-4: #f5afaf;
+}
+
+#headrAdmin{
+    background-color: var(--pink-1);
+}
+
 .admin-bg {
   background: var(--pink-1);
   min-height: 100vh;
@@ -9,13 +20,18 @@
   border-bottom: 1px solid var(--pink-3);
 }
 
+.nav-pills .nav-link.active-custom {
+    background-color: #f5afaf !important;
+    color: #000;
+}
+
+
 .admin-sidebar {
   width: 220px;
-  background: var(--pink-2);
+  background: var(--pink-3);
   min-height: calc(100vh - 60px);
   padding: 15px;
 }
-
 .admin-sidebar a {
   display: block;
   padding: 10px 12px;

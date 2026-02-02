@@ -33,4 +33,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetails, Long>
     List<Object[]> reportVIPCustomers(PageRequest of);
 
     List<OrderDetail> findByOrder_Id(Long orderId);
+
+    @Query("SELECT SUM(od.quantity) FROM OrderDetail od")
+    Long sumTotalBooks();
 }

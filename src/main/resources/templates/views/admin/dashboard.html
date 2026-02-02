@@ -5,19 +5,150 @@
 
 <h4 class="fw-bold mb-4">Tổng quan</h4>
 
-<div class="row g-3">
+<div class="row g-3 mb-4">
     <div class="col-md-3">
         <div class="p-3 bg-white rounded shadow-sm">
             <h6>Tổng đơn hàng</h6>
-            <h4>128</h4>
+            <h4 th:text="${totalOrder}">0</h4>
         </div>
     </div>
     <div class="col-md-3">
         <div class="p-3 bg-white rounded shadow-sm">
-            <h6>Sách</h6>
-            <h4>56</h4>
+            <h6>Tổng số sách đã bán</h6>
+            <h4 th:text="${totalBooks}">0</h4>
         </div>
     </div>
+    <div class="col-md-3">
+        <div class="p-3 bg-white rounded shadow-sm">
+            <h6>Tổng số người dùng</h6>
+            <h4 th:text="${totalCustomers}">0</h4>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="p-3 bg-white rounded shadow-sm">
+            <h6>Số sách đang có</h6>
+            <h4 th:text="${totalBook}">0</h4>
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link"
+           th:classappend="${tab == 'category'} ? 'active active-custom' : 'text-secondary'"
+           th:href="@{/admin/dashboard(tab='category')}">
+            <i class="bi bi-tags-fill me-1"></i> Theo Loại Hàng
+        </a>
+    </li>
+    <li class="nav-item ms-2">
+        <a class="nav-link"
+           th:classappend="${tab == 'product'} ? 'active active-custom' : 'text-secondary'"
+           th:href="@{/admin/dashboard(tab='product')}">
+            <i class="bi bi-book-fill me-1"></i> Theo Sản Phẩm
+        </a>
+    </li>
+    <li class="nav-item ms-2">
+        <a class="nav-link"
+           th:classappend="${tab == 'customer'} ? 'active active-custom' : 'text-secondary'"
+           th:href="@{/admin/dashboard(tab='customer')}">
+            <i class="bi bi-people-fill me-1"></i> Khách Hàng VIP
+        </a>
+    </li>
+</ul>
+
+<div class="row g-3">
+
+    <div class="col-12" th:if="${tab == 'category'}">
+        <h4 class="text-uppercase fw-bold border-start border-4 ps-2 mb-3" style="border-color: #f36f21 !important;">
+            Thống kê theo loại hàng</h4>
+        <table class="table table-bordered align-middle bg-white">
+            <thead class="text-white" style="background-color: #f36f21;">
+            <tr>
+                <th>Loại sách</th>
+                <th>Doanh thu</th>
+                <th>Số lượng</th>
+                <th>Giá Cao/Thấp/TB</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${categoryStats}">
+                <td th:text="${row[0]}" class="fw-bold"></td>
+                <td th:text="${#numbers.formatDecimal(row[1], 0, 'COMMA', 0, 'POINT')} + 'đ'"
+                    class="text-danger fw-bold"></td>
+                <td th:text="${row[2]}"></td>
+                <td>
+                    <small th:text="'Max: ' + ${row[3]}"></small><br>
+                    <small th:text="'Min: ' + ${row[4]}"></small><br>
+                    <small th:text="'Avg: ' + ${#numbers.formatDecimal(row[5], 0, 'COMMA', 0, 'POINT')}"></small>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-12" th:if="${tab == 'product'}">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="fw-bold text-success"><i class="bi bi-graph-up-arrow"></i> Top Bán Chạy</h5>
+                <table class="table table-hover bg-white border">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Tên sách</th>
+                        <th>Số lượng bán</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${topBook}">
+                        <td th:text="${item[0].title}"></td>
+                        <td th:text="${item[1]}" class="fw-bold text-center"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h5 class="fw-bold text-danger"><i class="bi bi-graph-down-arrow"></i> Top Bán Chậm</h5>
+                <table class="table table-hover bg-white border">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Tên sách</th>
+                        <th>Số lượng bán</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${lowBook}">
+                        <td th:text="${item[0].title}"></td>
+                        <td th:text="${item[1]}" class="fw-bold text-center"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12" th:if="${tab == 'customer'}">
+        <h4 class="text-uppercase fw-bold border-start border-4 ps-2 mb-3" style="border-color: #f36f21 !important;">
+            Top Khách hàng VIP</h4>
+        <table class="table table-striped bg-white">
+            <thead class="table-dark">
+            <tr>
+                <th>Họ tên</th>
+                <th>Tổng chi tiêu</th>
+                <th>Mua lần đầu</th>
+                <th>Mua lần cuối</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="vip : ${vipCustomers}">
+                <td th:text="${vip[0]}" class="fw-bold"></td>
+                <td th:text="${#numbers.formatDecimal(vip[1], 0, 'COMMA', 0, 'POINT')} + 'đ'"
+                    class="text-success fw-bold"></td>
+                <td th:text="${#temporals.format(vip[2], 'dd/MM/yyyy')}"></td>
+                <td th:text="${#temporals.format(vip[3], 'dd/MM/yyyy')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 </body>

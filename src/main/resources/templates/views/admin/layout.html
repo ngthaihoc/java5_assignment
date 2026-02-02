@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:fragment="layout(body)">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Admin</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,9 +12,12 @@
 <body class="admin-bg">
 
 <!-- HEADER -->
-<div class="admin-header d-flex justify-content-between align-items-center px-4">
-    <h5 class="fw-bold mb-0">Admin BookStore</h5>
-    <a href="#" class="text-danger text-decoration-none fw-medium">Đăng xuất</a>
+<div style="background-color: #f5afaf;" id="headrAdmin"
+     class="admin-header d-flex justify-content-between align-items-center px-4">
+    <h5 class="fw-bold mb-0">Admin SynkrokBooks</h5>
+    <button class="btn borded-3">
+        <a href="/home" class="text-danger text-decoration-none fw-medium">Quay về trang chủ</a>
+    </button>
 </div>
 
 <div class="d-flex">
@@ -32,9 +35,6 @@
            th:classappend="${active=='publishers'} ? 'active'">
             Quản lý nhà xuất bản
         </a>
-
-
-
     </div>
 
     <!-- CONTENT -->

@@ -1,18 +1,20 @@
 package com.fpt.assignment.service;
 
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.fpt.assignment.dto.LoginForm;
 import com.fpt.assignment.dto.RegisterForm;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.repository.AccountRepository;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -74,5 +76,10 @@ public class AuthService {
 
         accountRepository.save(acc);
 
+    }
+
+    public boolean isEmailNotExisted(String email) {
+        Optional<Account> existingAccount = accountRepository.findByEmail(email);
+        return existingAccount.isEmpty();
     }
 }

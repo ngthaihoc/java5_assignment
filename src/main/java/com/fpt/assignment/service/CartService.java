@@ -40,6 +40,10 @@ public class CartService {
                     CartItemDTO dto = new CartItemDTO();
                     dto.setCartDetailId(d.getId());
                     dto.setBook(d.getBook());
+                    dto.setTitle(d.getBook().getTitle());
+                    dto.setImage(d.getBook().getImage());
+                    dto.setAuthor(d.getBook().getAuthorName());
+                    dto.setBook(d.getBook());
                     dto.setPrice(d.getBook().getPrice());
                     dto.setQuantity(d.getQuantity());
                     dto.setTotal(

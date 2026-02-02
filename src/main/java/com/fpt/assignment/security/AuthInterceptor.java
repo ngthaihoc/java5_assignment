@@ -13,12 +13,14 @@ import jakarta.servlet.http.HttpSession;
 public class AuthInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+    System.out.println(">>> Đang kiểm tra quyền truy cập cho URL: " + request.getRequestURI());
     HttpSession session = request.getSession();
     Account user = (Account) session.getAttribute("user");
     String uri = request.getRequestURI();
 
     // 1. Kiểm tra đăng nhập
-    if (user == null && uri.contains("/auth")) {
+    if (user == null && (uri.contains("/auth") || uri.contains("/cart") || uri.contains("/admin"))) {
       session.setAttribute("back-url", request.getRequestURI());
       response.sendRedirect("/login");
       return false; // Chặn đứng request, không cho vào Controller
