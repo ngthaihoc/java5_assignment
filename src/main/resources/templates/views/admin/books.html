@@ -39,9 +39,7 @@
 
                 <td class="text-center">
                     <button class="btn btn-sm btn-outline-primary me-1 edit-btn" th:data-id="${b.id}"
-                        th:data-title="${b.title}" th:data-author="${b.authorName}" th:data-price="${b.price}"
-                        th:data-quantity="${b.quantity}" th:data-image="${b.image}" data-bs-toggle="modal"
-                        data-bs-target="#editBookModal">
+                        data-bs-toggle="modal" data-bs-target="#editBookModal">
                         Sửa
                     </button>
                     <a th:href="@{/admin/books/delete/{id}(id=${b.id})}" class="btn btn-sm btn-outline-danger"
@@ -158,20 +156,70 @@
                     <div class="modal-body row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Tên sách</label>
-                            <input class="form-control" name="title" id="editTitle" />
+                            <input class="form-control" name="title" id="editTitle" required />
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Tác giả</label>
-                            <input class="form-control" name="authorName" id="editAuthor" />
+                            <input class="form-control" name="authorName" id="editAuthor" required />
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Giá bán</label>
-                            <input class="form-control" name="price" id="editPrice" />
+                            <input class="form-control" name="price" id="editPrice" type="number" step="1000" min="0" />
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Tồn kho</label>
-                            <input class="form-control" name="quantity" id="editQuantity" />
+                            <input class="form-control" name="quantity" id="editQuantity" type="number" min="0" />
                         </div>
+
+                        <!-- Extra Fields -->
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày xuất bản</label>
+                            <input class="form-control" name="publishDate" id="editPublishDate" type="date" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Số trang</label>
+                            <input class="form-control" name="pageCount" id="editPageCount" type="number" min="1" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kích thước</label>
+                            <input class="form-control" name="dimensions" id="editDimensions"
+                                placeholder="VD: 14x20 cm" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Dịch giả</label>
+                            <input class="form-control" name="translator" id="editTranslator" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Loại bìa</label>
+                            <select class="form-select" name="coverType" id="editCoverType">
+                                <option value="Bìa mềm">Bìa mềm</option>
+                                <option value="Bìa cứng">Bìa cứng</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-select" name="available" id="editAvailable">
+                                <option value="true">Đang bán</option>
+                                <option value="false">Ngưng bán</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Danh mục</label>
+                            <select class="form-select" name="category.id" id="editCategoryId">
+                                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nhà xuất bản</label>
+                            <select class="form-select" name="publisher.id" id="editPublisherId">
+                                <option th:each="p : ${publishers}" th:value="${p.id}" th:text="${p.name}"></option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" name="description" id="editDescription" rows="3"></textarea>
+                        </div>
+
                         <div class="col-12">
                             <label class="form-label">Ảnh bìa</label>
                             <input type="file" class="form-control" id="editImageFile" accept="image/*" />

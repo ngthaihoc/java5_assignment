@@ -114,27 +114,37 @@ public class AuthController {
   public String verify(HttpSession session, HttpServletResponse response, @RequestParam("otpCode") String userOtp) {
     String serverOtp = (String) session.getAttribute("otp");
 
-    if (session.getAttribute("otpAction") != null && session.getAttribute("otpAction") == "forgot") {
-      return "views/auth/resetPassword";
-    }
+    if (serverOtp != null && serverOtp.equals(userOtp)) {
+      String otpAction = (String) session.getAttribute("otpAction");
 
-    RegisterForm registerDTO = (RegisterForm) session.getAttribute("registerDTO");
+      if ("forgot".equals(otpAction)) {
+        return "views/auth/resetPassword";
+      }
 
-    if (userOtp.equals(serverOtp)) {
+      RegisterForm registerDTO = (RegisterForm) session.getAttribute("registerDTO");
+      if (registerDTO != null) {
+        Account account = authService.createAccount(registerDTO).orElse(null);
+        if (account != null) {
+          session.setAttribute("user", account);
+        }
+      }
 
-      Account account = authService.createAccount(registerDTO).orElseThrow(null);
-
-      // Xoá otp và registerDTO trong session
+      // Cleanup
       session.removeAttribute("otp");
       session.removeAttribute("registerDTO");
+      session.removeAttribute("otpAction");
 
-      // Kiểm tra user có null không trước khi set vào session
-      session.setAttribute("user", account);
       return "redirect:/home";
 
     } else {
-      String email = (registerDTO != null) ? registerDTO.getEmail() : "";
-      return "redirect:/verify?email=" + email + "&error=true";
+      String email = "";
+      RegisterForm registerDTO = (RegisterForm) session.getAttribute("registerDTO");
+      if (registerDTO != null) {
+        email = registerDTO.getEmail();
+      } else {
+        email = (String) session.getAttribute("forgotEmail");
+      }
+      return "redirect:/verify?email=" + (email == null ? "" : email) + "&error=true";
     }
   }
 
@@ -162,7 +172,7 @@ public class AuthController {
     boolean validate = authService.isEmailNotExisted(email);
 
     if (validate) {
-      model.addAttribute("error", "Email đã tồn tại");
+      model.addAttribute("error", "Email không tồn tại trong hệ thống");
       return "views/auth/forgot";
     }
 

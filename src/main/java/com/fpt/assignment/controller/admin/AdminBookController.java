@@ -45,4 +45,10 @@ public class AdminBookController {
         }
         return "redirect:/admin/books";
     }
+
+    @GetMapping("/api/{id}")
+    @ResponseBody
+    public Book getBook(@PathVariable("id") Long id) {
+        return bookRepository.findById(id).orElse(null);
+    }
 }
