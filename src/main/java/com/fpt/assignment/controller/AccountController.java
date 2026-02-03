@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,6 +61,9 @@ public class AccountController {
             @RequestParam("photo") MultipartFile photo) {
 
         Account currentUser = authService.getLoggedAccount();
+        System.out.println(currentUser.getEmail());
+        System.out.println(currentUser.getFullname());
+        System.out.println(currentUser.getPassword());
         currentUser.setFullname(fullname);
 
         if (!photo.isEmpty()) {
@@ -86,6 +88,7 @@ public class AccountController {
         Account user = authService.getLoggedAccount();
 
         List<OrderHistory> list = orderRepo.findByUsername(user.getEmail());
+        model.addAttribute("user", user);
         model.addAttribute("orders", list);
         model.addAttribute("currentTab", "orders");
         return "views/account";
@@ -97,7 +100,7 @@ public class AccountController {
             @RequestParam("newPass") String newPass,
             @RequestParam("confirmPass") String confirmPass) {
         Account user = authService.getLoggedAccount();
-
+        model.addAttribute("user", user);
         if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
             model.addAttribute("error", "Vui lòng điền đầy đủ thông tin");
             model.addAttribute("currentTab", "password");
@@ -126,27 +129,10 @@ public class AccountController {
 
     @GetMapping("/change-password")
     public String changePassword(Model model) {
+        Account user = authService.getLoggedAccount();
+        model.addAttribute("user", user);
         model.addAttribute("currentTab", "password");
-        return "views/account";
-    }
 
-    // @GetMapping("/address")
-    // public String viewAddress(Model model) {
-    // model.addAttribute("userFullname", "Nguyễn Học");
-    // model.addAttribute("currentTab", "address");
-    // return "views/account";
-    // }
-
-    @GetMapping("/statistics")
-    public String viewStatistics(Model model) {
-        model.addAttribute("categoryStats", detailRepo.reportByCategory());
-
-        model.addAttribute("topBook", detailRepo.findTopSellingBooks(PageRequest.of(0, 1)));
-        model.addAttribute("lowBook", detailRepo.findLowestSellingBooks(PageRequest.of(0, 1)));
-
-        model.addAttribute("vipCustomers", detailRepo.reportVIPCustomers(PageRequest.of(0, 10)));
-
-        model.addAttribute("currentTab", "statistics");
         return "views/account";
     }
 

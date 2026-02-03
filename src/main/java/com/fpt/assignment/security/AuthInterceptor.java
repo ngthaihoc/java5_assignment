@@ -21,7 +21,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     // 1. Kiểm tra đăng nhập
     if (user == null && (uri.contains("/auth") || uri.contains("/cart") || uri.contains("/admin"))) {
-      session.setAttribute("back-url", request.getRequestURI());
+      String referer = request.getHeader("Referer");
+      session.setAttribute("back-url", referer);
       response.sendRedirect("/login");
       return false; // Chặn đứng request, không cho vào Controller
     }

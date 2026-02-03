@@ -44,11 +44,9 @@
             <div class="user-greeting">
               <h5 class="mb-0 fw-bold">
                 Xin chào,
-                <span
-                  th:text="${userFullname != null ? userFullname : 'Nguyễn Học'}"
+                <span th:text="${user.fullname != null ? user.fullname : ''}"
                   >User</span
                 >
-                !
               </h5>
             </div>
 
@@ -62,19 +60,19 @@
               </a>
 
               <a
-                th:href="@{/auth/account/orders}"
-                class="list-group-item list-group-item-action"
-                th:classappend="${currentTab == 'orders'} ? 'active-link'"
-              >
-                <i class="fas fa-shopping-bag me-2"></i> Đơn hàng của bạn
-              </a>
-
-              <a
                 th:href="@{/auth/account/change-password}"
                 class="list-group-item list-group-item-action"
                 th:classappend="${currentTab == 'password'} ? 'active-link'"
               >
                 <i class="fas fa-key me-2"></i> Đổi mật khẩu
+              </a>
+
+              <a
+                th:href="@{/auth/account/orders}"
+                class="list-group-item list-group-item-action"
+                th:classappend="${currentTab == 'orders'} ? 'active-link'"
+              >
+                <i class="fas fa-shopping-bag me-2"></i> Đơn hàng của bạn
               </a>
 
               <a

@@ -1,50 +1,66 @@
 <!DOCTYPE html>
 <html
-        xmlns:th="http://www.thymeleaf.org"
-        th:replace="~{views/layout :: layout(~{::body})}"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{views/layout :: layout(~{::body})}"
 >
-<body >
-<link th:href="@{/css/login.css}" rel="stylesheet" />
-<div class="card vh-100">
-    <div class="card-header bg-primary text-white">
-        <h4>Chi tiết đơn hàng #[[${order.id}]]</h4>
-    </div>
-    <div class="card-body">
+  <body>
+    <link th:href="@{/css/login.css}" rel="stylesheet" />
+    <div class="card vh-100 border-0">
+      <div class="header-gradient py-5 text-center">
+        <h1 class="fw-bold text-white">Chi tiết đơn hàng #[[${order.id}]]</h1>
+      </div>
+
+      <div class="card-body mt-3">
         <div class="row mb-3">
-            <div class="col-6">
-                <p><strong>Người đặt:</strong> [[${order.account.fullname}]]</p>
-                <p><strong>Email:</strong> [[${order.account.email}]]</p>
-                <p><strong>Sđt:</strong> [[${order.phone}]]</p>
-            </div>
-            <div class="col-6">
-                <p><strong>Ngày đặt:</strong> [[${#temporals.format(order.createDate, 'dd/MM/yyyy')}]]</p>
-                <p><strong>Địa chỉ:</strong> [[${order.address}]]</p>
-                <p><strong>Tình trạng đơn:</strong> <span th:text="${order.status == 0 ? 'Mới' : order.status == 1 ? 'Đang giao' :order.status == 2 ? 'Hoàn tất' : 'Đã hủy'}"></span></p>
-            </div>
+          <div class="col-6">
+            <p><strong>Người đặt:</strong> [[${order.account.fullname}]]</p>
+            <p><strong>Email:</strong> [[${order.account.email}]]</p>
+            <p><strong>Sđt:</strong> [[${order.phone}]]</p>
+          </div>
+          <div class="col-6">
+            <p>
+              <strong>Ngày đặt:</strong> [[${#temporals.format(order.createDate,
+              'dd/MM/yyyy')}]]
+            </p>
+            <p><strong>Địa chỉ:</strong> [[${order.address}]]</p>
+            <p>
+              <strong>Tình trạng đơn:</strong>
+              <span
+                th:text="${order.status == 0 ? 'Mới' : order.status == 1 ? 'Đang giao' :order.status == 2 ? 'Hoàn tất' : 'Đã hủy'}"
+              ></span>
+            </p>
+          </div>
         </div>
 
         <table class="table table-bordered">
-            <thead class="table-light">
+          <thead class="table-light">
             <tr>
-                <th>Tên sách</th>
-                <th>Giá mua</th>
-                <th>Số lượng</th>
-                <th>Tổng cộng</th>
+              <th>Tên sách</th>
+              <th>Giá mua</th>
+              <th>Số lượng</th>
+              <th>Tổng cộng</th>
             </tr>
-            </thead>
-            <tbody>
+          </thead>
+          <tbody>
             <tr th:each="d : ${order.orderDetails}">
-                <td>[[${d.book.title}]]</td>
-                <td>[[${#numbers.formatDecimal(d.price, 0, 'COMMA', 0, 'POINT')}]] đ</td>
-                <td>[[${d.quantity}]]</td>
-                <td>[[${#numbers.formatDecimal(d.price * d.quantity, 0, 'COMMA', 0, 'POINT')}]] đ</td>
+              <td>[[${d.book.title}]]</td>
+              <td>
+                [[${#numbers.formatDecimal(d.price, 0, 'COMMA', 0, 'POINT')}]] đ
+              </td>
+              <td>[[${d.quantity}]]</td>
+              <td>
+                [[${#numbers.formatDecimal(d.price * d.quantity, 0, 'COMMA', 0,
+                'POINT')}]] đ
+              </td>
             </tr>
-            </tbody>
+          </tbody>
         </table>
         <div class="text-end">
-            <a th:href="@{/account/orders}" class="btn btn-secondary">Quay lại danh sách</a>
+          <a th:href="@{/auth/account/orders}" class="btn btn-secondary"
+            >Quay lại danh sách</a
+          >
         </div>
+      </div>
     </div>
-</div>
-</body>
+  </body>
 </html>

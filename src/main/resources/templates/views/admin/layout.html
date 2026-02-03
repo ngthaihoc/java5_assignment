@@ -1,49 +1,83 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:fragment="layout(body)">
-<head>
-    <meta charset="UTF-8"/>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(body)">
+  <head>
+    <meta charset="UTF-8" />
     <title>Admin</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link th:href="@{/css/admin.css}" rel="stylesheet">
-</head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link th:href="@{/css/admin.css}" rel="stylesheet" />
 
-<body class="admin-bg">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
 
-<!-- HEADER -->
-<div style="background-color: #f5afaf;" id="headrAdmin"
-     class="admin-header d-flex justify-content-between align-items-center px-4">
-    <h5 class="fw-bold mb-0">Admin SynkrokBooks</h5>
-    <button class="btn borded-3">
-        <a href="/home" class="text-danger text-decoration-none fw-medium">Quay về trang chủ</a>
-    </button>
-</div>
-
-<div class="d-flex">
-    <!-- SIDEBAR -->
-    <div class="admin-sidebar">
-        <a th:href="@{/admin/dashboard}" th:classappend="${active=='dashboard'} ? 'active'">Tổng quan</a>
-        <a th:href="@{/admin/categories}"
-           th:classappend="${active=='categories'} ? 'active'">
-            Quản lý loại sách
-        </a>
-        <a th:href="@{/admin/books}" th:classappend="${active=='books'} ? 'active'">Quản lý sách</a>
-        <a th:href="@{/admin/orders}" th:classappend="${active=='orders'} ? 'active'"> Quản lý đơn hàng</a>
-        <a th:href="@{/admin/customers}" th:classappend="${active=='customers'} ? 'active'">Quản lý khách hàng</a>
-        <a th:href="@{/admin/publishers}"
-           th:classappend="${active=='publishers'} ? 'active'">
-            Quản lý nhà xuất bản
-        </a>
+  <body class="admin-bg">
+    <!-- HEADER -->
+    <div
+      style="background-color: #f5afaf"
+      id="headrAdmin"
+      class="admin-header d-flex justify-content-between align-items-center px-4"
+    >
+      <h5 class="fw-bold mb-0">Admin SynkrokBooks</h5>
+      <button class="btn borded-3">
+        <a href="/home" class="text-black text-decoration-none fw-bold"
+          >Quay về trang chủ</a
+        >
+      </button>
     </div>
 
-    <!-- CONTENT -->
-    <div class="admin-content w-100 p-4">
+    <div class="d-flex">
+      <!-- SIDEBAR -->
+      <div class="admin-sidebar">
+        <a
+          th:href="@{/admin/dashboard}"
+          th:classappend="${active=='dashboard'} ? 'active'"
+          >Tổng quan</a
+        >
+        <a
+          th:href="@{/admin/categories}"
+          th:classappend="${active=='categories'} ? 'active'"
+        >
+          Quản lý loại sách
+        </a>
+        <a
+          th:href="@{/admin/books}"
+          th:classappend="${active=='books'} ? 'active'"
+          >Quản lý sách</a
+        >
+        <a
+          th:href="@{/admin/orders}"
+          th:classappend="${active=='orders'} ? 'active'"
+        >
+          Quản lý đơn hàng</a
+        >
+        <a
+          th:href="@{/admin/customers}"
+          th:classappend="${active=='customers'} ? 'active'"
+          >Quản lý khách hàng</a
+        >
+        <a
+          th:href="@{/admin/publishers}"
+          th:classappend="${active=='publishers'} ? 'active'"
+        >
+          Quản lý nhà xuất bản
+        </a>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="admin-content w-100 p-4">
         <div th:replace="${body}"></div>
+      </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
