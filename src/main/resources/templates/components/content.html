@@ -68,7 +68,7 @@
                                 </div>
 
                                 <!-- Thêm chức năng thêm vào giỏ hàng ở đây-->
-                                <form th:action="@{/cart/add/{id}(id=${book.id})}" method="post">
+                                <form th:action="@{/cart/add}" method="post">
                                     <input type="hidden" name="bookId" th:value="${book.id}" />
                                     <div class="d-grid gap-2">
                                         <button type="submit" class="btn btn-sm btn-addtocart">
@@ -135,7 +135,7 @@
                             th:text="${#numbers.formatDecimal(lastestBook.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
                     </div>
 
-                    <form th:action="@{/cart/add/{id}(id=${lastestBook.id})}" method="post">
+                    <form th:action="@{/cart/add}" method="post">
                         <input type="hidden" name="bookId" th:value="${lastestBook.id}" />
                         <button type="submit" class="btn btn-dark btn-lg rounded-pill px-4 w-100 shadow">
                             <i class="fas fa-shopping-cart me-2"></i> ĐẶT MUA SÁCH NGAY

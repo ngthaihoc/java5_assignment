@@ -2,7 +2,10 @@
   <h4 class="mb-4 text-uppercase fw-bold">Đơn hàng của bạn</h4>
 
   <div class="table-responsive">
-    <table class="table table-hover table-bordered align-middle">
+    <table
+      class="table table-hover table-bordered align-middle"
+      th:if="${orders != null and !orders.isEmpty()}"
+    >
       <thead class="text-white" style="background-color: #f36f21">
         <tr>
           <th scope="col">Đơn hàng</th>
@@ -53,5 +56,9 @@
         </tr>
       </tbody>
     </table>
+
+    <h3 class="text-center py-5" th:if="${orders == null or orders.isEmpty()}">
+      Không có đơn hàng
+    </h3>
   </div>
 </div>

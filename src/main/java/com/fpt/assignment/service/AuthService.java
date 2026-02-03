@@ -53,7 +53,6 @@ public class AuthService {
         cart.setAccount(account);
         cartRepository.save(cart);
 
-        account.setPassword(null);
         return Optional.of(account);
     }
 
