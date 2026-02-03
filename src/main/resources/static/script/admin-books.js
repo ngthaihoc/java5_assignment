@@ -51,31 +51,88 @@ setupImageUpload("editImageFile", "editImageUrl", "editPreview");
 // ==========================================
 document.querySelectorAll(".edit-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-        // Lấy dữ liệu từ data-attribute của nút Sửa
         const id = btn.dataset.id;
-        const title = btn.dataset.title;
-        const author = btn.dataset.author;
-        const price = btn.dataset.price;
-        const quantity = btn.dataset.quantity;
-        const image = btn.dataset.image; // Đây là tên file (ví dụ: abc.jpg)
 
-        // Đổ dữ liệu vào Form Edit
-        document.getElementById("editId").value = id;
-        document.getElementById("editTitle").value = title;
-        document.getElementById("editAuthor").value = author;
-        document.getElementById("editPrice").value = price;
-        document.getElementById("editQuantity").value = quantity;
-        
-        // Xử lý ảnh
-        document.getElementById("editImageUrl").value = image;
-        
-        const preview = document.getElementById("editPreview");
-        if (image && image !== 'null') {
-            // Logic ghép đường dẫn phải khớp với HTML: /images/books/ + tên file
-            preview.src = "/images/books/" + image;
-            preview.style.display = "block";
-        } else {
-            preview.src = "/images/books/default-book.png";
-        }
+        // Reset placeholders/values trước khi fetch
+        document.querySelectorAll("#editBookModal input, #editBookModal textarea").forEach(el => {
+            el.placeholder = "";
+        });
+
+        fetch(`/admin/books/api/${id}`)
+            .then(response => {
+                if (!response.ok) throw new Error("Not found");
+                return response.json();
+            })
+            .then(data => {
+                const fill = (id, val, label, type = "text") => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    const isEmpty = (val === null || val === undefined || (typeof val === 'string' && val.trim() === ""));
+                    if (isEmpty) {
+                        const msg = `không có dữ liệu ${label}`;
+                        if (type === "text" || type === "textarea") {
+                            el.value = msg;
+                        } else {
+                            el.value = "";
+                            el.placeholder = msg;
+                        }
+                    } else {
+                        el.value = val;
+                        el.placeholder = "";
+                    }
+                };
+
+                const fillSelect = (id, val, label) => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    const temp = el.querySelector('option[data-temp="true"]');
+                    if (temp) temp.remove();
+
+                    if (val === null || val === undefined || String(val).trim() === "") {
+                        const opt = document.createElement("option");
+                        opt.value = "";
+                        opt.text = `không có dữ liệu ${label}`;
+                        opt.setAttribute("data-temp", "true");
+                        el.prepend(opt);
+                        el.value = "";
+                    } else {
+                        el.value = val;
+                    }
+                };
+
+                document.getElementById("editId").value = data.id || "";
+
+                fill("editTitle", data.title, "tên sách");
+                fill("editAuthor", data.authorName, "tác giả");
+                fill("editPrice", data.price, "giá bán", "number");
+                fill("editQuantity", data.quantity, "tồn kho", "number");
+
+                fill("editPublishDate", data.publishDate, "ngày xuất bản", "date");
+                fill("editPageCount", data.pageCount, "số trang", "number");
+                fill("editDimensions", data.dimensions, "kích thước");
+                fill("editTranslator", data.translator, "dịch giả");
+
+                fillSelect("editCoverType", data.coverType, "loại bìa");
+                document.getElementById("editAvailable").value = (data.available !== null && data.available !== undefined) ? data.available.toString() : "true";
+
+                fillSelect("editCategoryId", data.category ? data.category.id : null, "danh mục");
+                fillSelect("editPublisherId", data.publisher ? data.publisher.id : null, "nhà xuất bản");
+
+                fill("editDescription", data.description, "mô tả", "textarea");
+
+                document.getElementById("editImageUrl").value = data.image || "";
+                const preview = document.getElementById("editPreview");
+
+                if (data.image && data.image.trim() !== "") {
+                    preview.src = "/images/books/" + data.image;
+                } else {
+                    preview.src = "/images/books/default-book.png";
+                }
+                preview.style.display = "block";
+            })
+            .catch(error => {
+                console.error("Error fetching book details:", error);
+                alert("Không thể tải thông tin sách!");
+            });
     });
 });

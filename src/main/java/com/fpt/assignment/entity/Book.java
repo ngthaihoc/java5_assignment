@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "books")
@@ -56,4 +58,8 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<CartDetail> cartDetails;
 }

@@ -21,7 +21,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Account {
     @Id
-    @Column(length = 100)
+    @Column
     private String email;
 
     @Column(nullable = false)

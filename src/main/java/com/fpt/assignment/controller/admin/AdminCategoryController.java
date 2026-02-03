@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/categories")
@@ -21,27 +22,32 @@ public class AdminCategoryController {
         return "views/admin/categories";
     }
 
-
     @PostMapping("/create")
-    public String createBook(@ModelAttribute Category cate) {
+    public String createCategory(@ModelAttribute Category cate) {
         categoryRepository.save(cate);
         return "redirect:/admin/categories";
     }
 
     @PostMapping("/update")
-    public String updateBook(@ModelAttribute Category cate) {
+    public String updateCategory(@ModelAttribute Category cate) {
         categoryRepository.save(cate);
         return "redirect:/admin/categories";
     }
 
-
     @GetMapping("/delete/{id}")
-    public String deleteBook(@PathVariable("id") Long id) {
-        if (categoryRepository.existsById(id)) {
-            categoryRepository.deleteById(id);
+    public String deleteCategory(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            if (categoryRepository.existsById(id)) {
+                categoryRepository.deleteById(id);
+                redirectAttributes.addFlashAttribute("success", "Xóa danh mục thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Danh mục không tồn tại!");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error",
+                    "Không thể xóa danh mục này vì đang chứa sách hoặc dữ liệu liên quan!");
         }
         return "redirect:/admin/categories";
     }
-
 
 }
