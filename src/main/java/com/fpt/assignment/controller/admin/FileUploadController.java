@@ -16,13 +16,11 @@ import java.util.UUID;
 @Controller
 public class FileUploadController {
 
-    private static final String UPLOAD_DIR =
-            System.getProperty("user.dir") + "/src/main/resources/static/images/books";
-
     @PostMapping("admin/books/upload-image")
     @ResponseBody
     public String handleImageUpload(@RequestParam("file") MultipartFile file) throws IOException {
-        if (file.isEmpty()) return "default-book.png";
+        if (file.isEmpty())
+            return "default-book.png";
 
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
@@ -31,7 +29,6 @@ public class FileUploadController {
 
         Files.createDirectories(targetPath.getParent());
         Files.createDirectories(srcPath.getParent());
-
 
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         Files.copy(file.getInputStream(), srcPath, StandardCopyOption.REPLACE_EXISTING);

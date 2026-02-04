@@ -1,8 +1,5 @@
 package com.fpt.assignment.service;
 
-import com.fpt.assignment.dto.CustomerDTO;
-import com.fpt.assignment.dto.CustomerDetailDTO;
-import com.fpt.assignment.dto.OrderHistoryDTO;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.entity.Order;
 import com.fpt.assignment.repository.AccountRepository;
@@ -22,26 +19,25 @@ public class CustomerServiceImpl implements CustomerService {
 
         // ================= DANH SÁCH =================
         @Override
-        public List<CustomerDTO> getCustomers() {
+        public List<Account> getCustomers() {
                 return accountRepository.findAllCustomers()
                                 .stream()
-                                .map(this::toDTO)
+                                .peek(this::enrichAccountData)
                                 .toList();
         }
 
         // ================= SEARCH + FILTER =================
         @Override
-        public List<CustomerDTO> searchCustomers(String keyword, String rank, String status) {
+        public List<Account> searchCustomers(String keyword, String rank, String status) {
 
-                List<CustomerDTO> customers = getCustomers();
+                List<Account> customers = getCustomers();
 
                 // 1️⃣ TÌM KIẾM
                 if (keyword != null && !keyword.isBlank()) {
                         String kw = keyword.toLowerCase();
                         customers = customers.stream()
-                                        .filter(c -> c.getName().toLowerCase().contains(kw)
-                                                        || c.getEmail().toLowerCase().contains(kw)
-                                                        || (c.getPhone() != null && c.getPhone().contains(kw)))
+                                        .filter(c -> c.getFullname().toLowerCase().contains(kw)
+                                                        || c.getEmail().toLowerCase().contains(kw))
                                         .toList();
                 }
 
@@ -56,26 +52,19 @@ public class CustomerServiceImpl implements CustomerService {
                 if (status != null && !status.isBlank()) {
                         boolean active = status.equals("active");
                         customers = customers.stream()
-                                        .filter(c -> c.isStatus() == active)
+                                        .filter(c -> c.isEnabled() == active)
                                         .toList();
                 }
 
                 return customers;
         }
 
-        // DANH SÁCH
-        private CustomerDTO toDTO(Account account) {
-
-                CustomerDTO dto = new CustomerDTO();
-
-                dto.setEmail(account.getEmail());
-                dto.setName(account.getFullname());
-                dto.setPhone(""); // DB chưa có
-
+        // POPULATE TRANSIENT FIELDS
+        private void enrichAccountData(Account account) {
                 List<Order> orders = account.getOrders();
 
                 // số đơn
-                dto.setOrders(orders.size());
+                account.setOrderCount(orders.size());
 
                 // tổng chi
                 BigDecimal total = orders.stream()
@@ -83,97 +72,38 @@ public class CustomerServiceImpl implements CustomerService {
                                 .map(od -> od.getPrice()
                                                 .multiply(BigDecimal.valueOf(od.getQuantity())))
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-                dto.setTotal(total);
+                account.setTotalSpent(total);
 
                 // đơn gần nhất
                 LocalDateTime lastOrder = orders.stream()
                                 .map(Order::getCreateDate)
                                 .max(LocalDateTime::compareTo)
                                 .orElse(null);
-                dto.setLastOrder(lastOrder);
+                account.setLatestOrder(lastOrder);
 
                 // rank
                 if (total.compareTo(BigDecimal.valueOf(2_000_000)) >= 0)
-                        dto.setRank("Vàng");
+                        account.setRank("Vàng");
                 else if (total.compareTo(BigDecimal.valueOf(1_000_000)) >= 0)
-                        dto.setRank("Bạc");
+                        account.setRank("Bạc");
                 else
-                        dto.setRank("Thường");
-
-                // status
-                dto.setStatus(account.isEnabled());
-
-                return dto;
+                        account.setRank("Thường");
         }
 
         // CHI TIẾT KHÁCH HÀNG
         @Override
-        public CustomerDetailDTO getCustomerDetail(String email) {
-
+        public Account getCustomerDetail(String email) {
                 Account acc = accountRepository.findById(email).orElseThrow();
-                List<Order> orders = acc.getOrders();
+                enrichAccountData(acc);
 
-                CustomerDetailDTO dto = new CustomerDetailDTO();
-                dto.setEmail(acc.getEmail());
-                dto.setName(acc.getFullname());
-                dto.setAddress(
-                                orders.stream()
-                                                .map(Order::getAddress)
-                                                .filter(Objects::nonNull)
-                                                .findFirst()
-                                                .orElse("—"));
+                // Address logic
+                acc.setAddress(acc.getOrders().stream()
+                                .map(Order::getAddress)
+                                .filter(Objects::nonNull)
+                                .findFirst()
+                                .orElse("—"));
 
-                dto.setTotalOrders(orders.size());
-
-                BigDecimal total = orders.stream()
-                                .flatMap(o -> o.getOrderDetails().stream())
-                                .map(od -> od.getPrice()
-                                                .multiply(BigDecimal.valueOf(od.getQuantity())))
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                dto.setTotalAmount(total);
-
-                LocalDateTime lastOrder = orders.stream()
-                                .map(Order::getCreateDate)
-                                .max(LocalDateTime::compareTo)
-                                .orElse(null);
-                dto.setLastOrder(lastOrder);
-
-                dto.setRegisterDate(
-                                orders.stream()
-                                                .map(Order::getCreateDate)
-                                                .min(LocalDateTime::compareTo)
-                                                .orElse(null));
-
-                if (total.compareTo(BigDecimal.valueOf(2_000_000)) >= 0)
-                        dto.setRank("Vàng");
-                else if (total.compareTo(BigDecimal.valueOf(1_000_000)) >= 0)
-                        dto.setRank("Bạc");
-                else
-                        dto.setRank("Thường");
-
-                dto.setStatus(!orders.isEmpty());
-
-                // lịch sử đơn
-                List<OrderHistoryDTO> histories = orders.stream().map(o -> {
-                        OrderHistoryDTO h = new OrderHistoryDTO();
-                        h.setId(o.getId());
-                        h.setDate(o.getCreateDate());
-                        h.setItemCount(o.getOrderDetails().size());
-
-                        BigDecimal orderTotal = o.getOrderDetails().stream()
-                                        .map(od -> od.getPrice()
-                                                        .multiply(BigDecimal.valueOf(od.getQuantity())))
-                                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        h.setTotal(orderTotal);
-
-                        h.setStatus(
-                                        o.getStatus() == 2 ? "Đã giao" : o.getStatus() == 1 ? "Đang giao" : "Mới");
-                        return h;
-                }).toList();
-
-                dto.setOrders(histories);
-
-                return dto;
+                return acc;
         }
 
         @Override

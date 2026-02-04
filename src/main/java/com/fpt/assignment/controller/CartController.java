@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fpt.assignment.dto.CartItemDTO;
+import com.fpt.assignment.entity.CartDetail;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.service.CartService;
 
@@ -37,7 +37,7 @@ public class CartController {
 
         String email = user.getEmail();
 
-        List<CartItemDTO> items = cartService.getCartItems(email);
+        List<CartDetail> items = cartService.getCartItems(email);
 
         model.addAttribute("cartItems", items);
         model.addAttribute("cartTotal", cartService.getTotal(email));

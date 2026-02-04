@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{views/layout :: layout(~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{views/layout :: layout(~{::section})}">
 
 <section class="bg-light pb-4 min-vh-100">
-<link rel="stylesheet" th:href="@{/css/cart.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
 
     <!-- HEADER -->
     <div class="bg-white border-bottom mb-4">
@@ -12,9 +11,7 @@
                 ← Tiếp tục mua sắm
             </a>
             <h4 class="fw-bold mb-0">Giỏ hàng</h4>
-            <a th:if="${!#lists.isEmpty(cartItems)}"
-               th:href="@{/cart/clear}"
-               class="text-danger text-decoration-none">
+            <a th:if="${!#lists.isEmpty(cartItems)}" th:href="@{/cart/clear}" class="text-danger text-decoration-none">
                 Xóa tất cả
             </a>
         </div>
@@ -23,9 +20,8 @@
     <div class="container">
 
         <!-- ALERT ĐẶT HÀNG THÀNH CÔNG -->
-        <div th:if="${orderSuccess}"
-             class="alert alert-success alert-dismissible fade show position-fixed shadow"
-             style="top:20px; right:20px; z-index:9999">
+        <div th:if="${orderSuccess}" class="alert alert-success alert-dismissible fade show position-fixed shadow"
+            style="top:20px; right:20px; z-index:9999">
             <i class="fa-solid fa-circle-check me-2"></i>
             Đặt hàng thành công!
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -47,30 +43,27 @@
             <!-- LEFT -->
             <div class="col-lg-8">
 
-                <div th:each="item : ${cartItems}"
-                     class="bg-white rounded shadow-sm p-4 mb-3">
+                <div th:each="item : ${cartItems}" class="bg-white rounded shadow-sm p-4 mb-3">
 
                     <div class="row align-items-center">
 
                         <!-- IMAGE -->
                         <div class="col-md-3">
-                            <img
-                                    th:src="${#strings.isEmpty(item.image)
+                            <img th:src="${#strings.isEmpty(item.book.image)
                                   ? '/images/books/default-book.png'
-                                  : '/images/books/' + item.image}"
-                                    class="img-fluid rounded"
-                                    style="height:140px;object-fit:cover">
+                                  : '/images/books/' + item.book.image}" class="img-fluid rounded"
+                                style="height:140px;object-fit:cover">
                         </div>
 
                         <!-- INFO -->
                         <div class="col-md-6">
-                            <h6 class="fw-bold mb-1" th:text="${item.title}"></h6>
-                            <div class="text-muted small" th:text="${item.author}"></div>
-                            <div class="text-muted small mb-2" th:text="${item.category}"></div>
+                            <h6 class="fw-bold mb-1" th:text="${item.book.title}"></h6>
+                            <div class="text-muted small" th:text="${item.book.authorName}"></div>
+                            <div class="text-muted small mb-2" th:text="${item.book.category?.name}"></div>
 
                             <span class="fw-bold text-primary"
-                                  th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + ' đ'">
-              </span>
+                                th:text="${#numbers.formatDecimal(item.book.price,0,'COMMA',0,'POINT')} + ' đ'">
+                            </span>
                         </div>
 
                         <!-- QTY -->
@@ -79,22 +72,21 @@
                             <div class="d-flex justify-content-end align-items-center gap-2">
 
                                 <!-- GIẢM -->
-                                <a th:href="@{/cart/update(id=${item.cartDetailId},qty=${item.quantity - 1})}"
-                                   class="btn btn-outline-secondary btn-sm">−</a>
+                                <a th:href="@{/cart/update(id=${item.id},qty=${item.quantity - 1})}"
+                                    class="btn btn-outline-secondary btn-sm">−</a>
 
                                 <span class="fw-bold px-2" th:text="${item.quantity}"></span>
 
                                 <!-- TĂNG -->
-                                <a th:href="@{/cart/update(id=${item.cartDetailId},qty=${item.quantity + 1})}"
-                                   class="btn btn-outline-secondary btn-sm">+</a>
+                                <a th:href="@{/cart/update(id=${item.id},qty=${item.quantity + 1})}"
+                                    class="btn btn-outline-secondary btn-sm">+</a>
                             </div>
 
                             <div class="fw-bold mt-3"
-                                 th:text="${#numbers.formatDecimal(item.total,0,'COMMA',0,'POINT')} + ' đ'">
+                                th:text="${#numbers.formatDecimal(item.total,0,'COMMA',0,'POINT')} + ' đ'">
                             </div>
 
-                            <a th:href="@{/cart/remove/{id}(id=${item.cartDetailId})}"
-                               class="text-danger d-inline-block mt-2">
+                            <a th:href="@{/cart/remove/{id}(id=${item.id})}" class="text-danger d-inline-block mt-2">
                                 <i class="fa-solid fa-trash"></i>
                             </a>
 
@@ -124,8 +116,8 @@
                     <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
                         <span>Tổng cộng:</span>
                         <span class="text-primary"
-                              th:text="${#numbers.formatDecimal(cartTotal,0,'COMMA',0,'POINT')} + ' đ'">
-            </span>
+                            th:text="${#numbers.formatDecimal(cartTotal,0,'COMMA',0,'POINT')} + ' đ'">
+                        </span>
                     </div>
 
                     <a th:href="@{/checkout}" class="btn btn-primary w-100 mb-2">
@@ -143,4 +135,5 @@
     </div>
 
 </section>
+
 </html>

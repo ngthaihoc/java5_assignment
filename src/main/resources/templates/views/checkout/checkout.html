@@ -11,7 +11,7 @@
     <h4 class="fw-bold mt-2">Thanh toán</h4>
   </div>
 
-  <form th:action="@{/checkout}" method="post" th:object="${orderForm}">
+  <form th:action="@{/checkout}" method="post">
     <div class="container">
       <div class="row g-4">
         <!-- ================= LEFT ================= -->
@@ -25,17 +25,17 @@
 
             <div class="mb-3">
               <label class="form-label">Họ và tên *</label>
-              <input th:field="*{fullName}" class="form-control" required />
+              <input name="fullName" th:value="${fullName}" class="form-control" required />
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label>Email *</label>
-                <input th:field="*{email}" class="form-control" readonly />
+                <input name="email" th:value="${email}" class="form-control" readonly />
               </div>
               <div class="col-md-6 mb-3">
                 <label>Số điện thoại *</label>
-                <input th:field="*{phone}" class="form-control" required />
+                <input name="phone" th:value="${order.phone}" class="form-control" required />
               </div>
             </div>
           </div>
@@ -49,12 +49,12 @@
 
             <div class="mb-3">
               <label>Địa chỉ cụ thể *</label>
-              <input th:field="*{address}" class="form-control" required />
+              <input name="address" th:value="${order.address}" class="form-control" required />
             </div>
 
             <div>
               <label>Ghi chú (tuỳ chọn)</label>
-              <textarea th:field="*{note}" class="form-control" rows="3"></textarea>
+              <textarea name="note" class="form-control" rows="3"></textarea>
             </div>
           </div>
 
@@ -66,7 +66,7 @@
             </h6>
 
             <!-- Hidden input để gửi về backend -->
-            <input type="hidden" th:field="*{shippingMethod}" id="shippingMethodValue" value="standard" />
+            <input type="hidden" name="shippingMethod" id="shippingMethodValue" value="standard" />
 
             <div class="form-check mb-2">
               <input class="form-check-input" type="radio" name="shippingMethodRadio" id="shippingStandard"
@@ -99,8 +99,7 @@
             </h6>
 
             <div class="form-check mb-2">
-              <input class="form-check-input" type="radio" name="paymentMethod" th:field="*{paymentMethod}"
-                id="paymentCOD" value="cod" checked />
+              <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCOD" value="cod" checked />
               <label class="form-check-label" for="paymentCOD">
                 <i class="fa-solid fa-money-bill-wave me-2 text-success"></i>
                 Thanh toán khi nhận hàng (COD)
@@ -137,7 +136,7 @@
             <div style="max-height: 300px; overflow: auto">
               <div th:each="item : ${cartItems}" class="d-flex justify-content-between mb-2">
                 <div>
-                  <div th:text="${item.title}"></div>
+                  <div th:text="${item.book.title}"></div>
                   <small class="text-muted">x<span th:text="${item.quantity}"></span></small>
                 </div>
                 <div class="fw-bold" th:text="${#numbers.formatDecimal(item.total,0,'COMMA',0,'POINT')} + ' đ'"></div>

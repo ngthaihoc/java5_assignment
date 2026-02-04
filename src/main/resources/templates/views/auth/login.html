@@ -23,7 +23,7 @@
       >
         <div class="col-md-7 p-4 p-lg-5 bg-white text-dark">
           <h4 class="fw-bold mb-4">Đăng nhập tài khoản</h4>
-          <form th:action="@{/login}" th:object="${loginForm}" method="post">
+          <form th:action="@{/login}" method="post">
             <div
               th:if="${error}"
               class="alert alert-danger py-2 small mb-3 text-center"
@@ -37,7 +37,7 @@
               >
               <input
                 type="email"
-                th:field="*{email}"
+                name="email"
                 class="form-control rounded-1"
                 placeholder="Email"
                 required
@@ -50,7 +50,7 @@
               >
               <input
                 type="password"
-                th:field="*{password}"
+                name="password"
                 class="form-control rounded-1"
                 placeholder="Mật khẩu"
                 required
@@ -63,7 +63,7 @@
                   type="checkbox"
                   class="form-check-input"
                   id="rememberMe"
-                  th:field="*{rememberMe}"
+                  name="rememberMe"
                 />
                 <label class="form-check-label small fw-bold" for="rememberMe"
                   >Nhớ tài khoản</label

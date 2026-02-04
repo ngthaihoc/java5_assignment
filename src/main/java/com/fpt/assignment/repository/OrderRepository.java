@@ -1,6 +1,5 @@
 package com.fpt.assignment.repository;
 
-import com.fpt.assignment.dto.OrderHistory;
 import com.fpt.assignment.entity.Book;
 import com.fpt.assignment.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,12 +16,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT DISTINCT d.book FROM OrderDetails d WHERE d.order.account.email = ?1")
     List<Book> findPurchasedBooks(String email);
 
-    @Query("SELECT new com.fpt.assignment.dto.OrderHistory(" +
-            "o.id, o.createDate, o.address, o.status, SUM(d.price * d.quantity) + COALESCE(o.shippingFee, 0)) " +
-            "FROM Order o " +
-            "JOIN o.orderDetails d " +
-            "WHERE o.account.email = ?1 " +
-            "GROUP BY o.id, o.createDate, o.address, o.status, o.shippingFee " +
-            "ORDER BY o.createDate DESC")
-    List<OrderHistory> findByUsername(String email);
+    @Query("SELECT o FROM Order o WHERE o.account.email = ?1 ORDER BY o.createDate DESC")
+    List<Order> findByUsername(String email);
 }

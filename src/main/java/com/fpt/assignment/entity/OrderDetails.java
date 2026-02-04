@@ -1,5 +1,6 @@
 package com.fpt.assignment.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,9 +22,9 @@ public class OrderDetails {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    @JsonIgnore // Tránh vòng lặp: OrderDetails -> Order -> OrderDetails
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
 
 }
-

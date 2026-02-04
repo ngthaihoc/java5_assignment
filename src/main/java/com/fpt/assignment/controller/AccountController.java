@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fpt.assignment.dto.OrderHistory;
+import com.fpt.assignment.entity.Order;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.repository.AccountRepository;
 import com.fpt.assignment.repository.OrderDetailRepository;
@@ -87,7 +87,20 @@ public class AccountController {
     public String viewOrders(Model model, HttpSession session) {
         Account user = authService.getLoggedAccount();
 
-        List<OrderHistory> list = orderRepo.findByUsername(user.getEmail());
+        List<Order> list = orderRepo.findByUsername(user.getEmail());
+
+        // Calculate totalValue for each order
+        for (Order o : list) {
+            java.math.BigDecimal total = o.getOrderDetails().stream()
+                    .map(d -> d.getPrice().multiply(java.math.BigDecimal.valueOf(d.getQuantity())))
+                    .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+
+            if (o.getShippingFee() != null) {
+                total = total.add(o.getShippingFee());
+            }
+            o.setTotalValue(total);
+        }
+
         model.addAttribute("user", user);
         model.addAttribute("orders", list);
         model.addAttribute("currentTab", "orders");

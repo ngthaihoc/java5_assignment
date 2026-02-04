@@ -1,5 +1,6 @@
 package com.fpt.assignment.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class CartDetail {
     @Column(name = "added_at")
     private LocalDateTime addedAt;
 
+    @JsonIgnore // Tránh vòng lặp: CartDetail -> Cart -> CartDetail
     @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;
@@ -30,6 +32,7 @@ public class CartDetail {
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;
+
+    @Transient
+    private java.math.BigDecimal total;
 }
-
-

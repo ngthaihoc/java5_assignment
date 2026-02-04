@@ -1,16 +1,15 @@
 package com.fpt.assignment.service;
 
-import com.fpt.assignment.dto.CustomerDTO;
-import com.fpt.assignment.dto.CustomerDetailDTO;
+import com.fpt.assignment.entity.Account;
 
 import java.util.List;
 
 public interface CustomerService {
-    List<CustomerDTO> getCustomers();
+    List<Account> getCustomers();
 
-    List<CustomerDTO> searchCustomers(String keyword, String rank, String status);
+    List<Account> searchCustomers(String keyword, String rank, String status);
 
-    CustomerDetailDTO getCustomerDetail(String email);
+    Account getCustomerDetail(String email);
 
     void toggleStatus(String email);
 
