@@ -154,8 +154,12 @@ public class AuthController {
   }
 
   @PostMapping("/change-password")
-  public String changePassword(@RequestParam("newPassword") String newPassword) {
+  public String changePassword(@RequestParam("newPassword") String newPassword, Model model) {
     String email = (String) session.getAttribute("forgotEmail");
+    if (email == null) {
+      return "redirect:/forgot-password?error=session_expired";
+    }
+
     authService.updatePassword(email, newPassword);
 
     // Xoá các thuộc tính liên quan trong session
@@ -163,7 +167,7 @@ public class AuthController {
     session.removeAttribute("forgotEmail");
     session.removeAttribute("otpAction");
 
-    return "redirect:/login";
+    return "redirect:/login?message=changed_password";
   }
 
   @PostMapping("/forgot-password")

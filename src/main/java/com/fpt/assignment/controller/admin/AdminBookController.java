@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/books")
@@ -27,21 +28,39 @@ public class AdminBookController {
     }
 
     @PostMapping("/create")
-    public String createBook(@ModelAttribute Book book) {
-        bookRepository.save(book);
+    public String createBook(@ModelAttribute Book book, RedirectAttributes redirectAttributes) {
+        try {
+            bookRepository.save(book);
+            redirectAttributes.addFlashAttribute("success", "Thêm sách thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+        }
         return "redirect:/admin/books";
     }
 
     @PostMapping("/update")
-    public String updateBook(@ModelAttribute Book book) {
-        bookRepository.save(book);
+    public String updateBook(@ModelAttribute Book book, RedirectAttributes redirectAttributes) {
+        try {
+            bookRepository.save(book);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi cập nhật: " + e.getMessage());
+        }
         return "redirect:/admin/books";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteBook(@PathVariable("id") Long id) {
-        if (bookRepository.existsById(id)) {
-            bookRepository.deleteById(id);
+    public String deleteBook(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            if (bookRepository.existsById(id)) {
+                bookRepository.deleteById(id);
+                redirectAttributes.addFlashAttribute("success", "Xóa thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Sách không tồn tại!");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error",
+                    "Không thể xóa sách này (có thể đang có đơn hàng liên quan).");
         }
         return "redirect:/admin/books";
     }

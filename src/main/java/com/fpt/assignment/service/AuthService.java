@@ -86,6 +86,23 @@ public class AuthService {
 
     }
 
+    public Account loginFromCookie(Cookie[] cookies) {
+        if (cookies == null)
+            return null;
+
+        for (Cookie cookie : cookies) {
+            if ("user".equals(cookie.getName())) {
+                try {
+                    String email = new String(Base64.getDecoder().decode(cookie.getValue()));
+                    return accountRepository.findByEmail(email).orElse(null);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean isEmailNotExisted(String email) {
         Optional<Account> existingAccount = accountRepository.findByEmail(email);
         return existingAccount.isEmpty();

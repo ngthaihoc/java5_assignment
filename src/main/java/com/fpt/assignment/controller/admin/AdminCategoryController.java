@@ -23,14 +23,24 @@ public class AdminCategoryController {
     }
 
     @PostMapping("/create")
-    public String createCategory(@ModelAttribute Category cate) {
-        categoryRepository.save(cate);
+    public String createCategory(@ModelAttribute Category cate, RedirectAttributes redirectAttributes) {
+        try {
+            categoryRepository.save(cate);
+            redirectAttributes.addFlashAttribute("success", "Thêm danh mục thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+        }
         return "redirect:/admin/categories";
     }
 
     @PostMapping("/update")
-    public String updateCategory(@ModelAttribute Category cate) {
-        categoryRepository.save(cate);
+    public String updateCategory(@ModelAttribute Category cate, RedirectAttributes redirectAttributes) {
+        try {
+            categoryRepository.save(cate);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi cập nhật: " + e.getMessage());
+        }
         return "redirect:/admin/categories";
     }
 

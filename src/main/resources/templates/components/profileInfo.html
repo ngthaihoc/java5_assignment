@@ -15,7 +15,7 @@
                         <div class="avatar-wrapper position-relative">
                             <div class="p-1 bg-white shadow-sm rounded-circle border"
                                 style="width: 160px; height: 160px;">
-                                <img th:src="${(session.user.avatar == null || session.user.avatar == '') ? '/images/defaultuser.png' : '/images/' + session.user.avatar + '?v=' + #dates.createNow().getTime()}"
+                                <img th:src="${#strings.isEmpty(session.user.avatar) ? '/images/defaultuser.png' : '/images/' + session.user.avatar}"
                                     class="rounded-circle w-100 h-100" style="object-fit: cover;" alt="Ảnh đại diện">
                             </div>
 

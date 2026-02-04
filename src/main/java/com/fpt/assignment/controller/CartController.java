@@ -102,9 +102,17 @@ public class CartController {
     public String addToCart(@RequestParam("bookId") String bookId,
             @RequestParam(value = "quantity", defaultValue = "1") Integer quantity,
             @RequestParam(value = "action", defaultValue = "addToCart") String action,
+            @RequestParam(value = "returnUrl", required = false) String returnUrl,
             RedirectAttributes redirectAttributes) {
 
         Account user = (Account) session.getAttribute("user");
+
+        // Kiểm tra đăng nhập
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!");
+            return "redirect:/login";
+        }
+
         String email = user.getEmail();
 
         try {
@@ -118,12 +126,17 @@ public class CartController {
 
             if ("buyNow".equals(action)) {
                 return "redirect:/cart";
+            } else if (returnUrl != null && !returnUrl.isEmpty()) {
+                return "redirect:" + returnUrl;
             } else {
                 return "redirect:/book/" + bookId;
             }
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm: " + e.getMessage());
+            if (returnUrl != null && !returnUrl.isEmpty()) {
+                return "redirect:" + returnUrl;
+            }
             return "redirect:/book/" + bookId;
         }
     }

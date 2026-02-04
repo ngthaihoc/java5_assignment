@@ -143,9 +143,12 @@ public class CartService {
             Account account = accountRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
             cart = new Cart();
-            cart.setAccount(account);
-            cartRepository.save(cart);
+            cart.setAccount(account); // Gán account cho cart
+            // Quan trọng: Lưu cart trước khi trả về
+            // Đảm bảo không bị null ID khi dùng sau này
+            cart = cartRepository.save(cart);
         }
         return cart;
     }
+
 }
