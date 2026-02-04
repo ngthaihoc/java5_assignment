@@ -1,5 +1,6 @@
 package com.fpt.assignment.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class Order {
     private String address;
     private String phone;
     private int status;
+
+    @Column(name = "shipping_fee")
+    private BigDecimal shippingFee = BigDecimal.ZERO;
 
     @ManyToOne
     @JoinColumn(name = "email")

@@ -100,11 +100,13 @@ public class CartService {
 
     /* XÓA TOÀN BỘ GIỎ HÀNG */
     public void clear(String email) {
+        Cart cart = cartRepository.findByAccount_Email(email);
 
-        Cart cart = getOrCreateCart(email);
-
-        cartDetailRepository.deleteAll(
-                cartDetailRepository.findByCart_Id(cart.getId()));
+        // Chỉ xóa nếu cart tồn tại
+        if (cart != null) {
+            cartDetailRepository.deleteAll(
+                    cartDetailRepository.findByCart_Id(cart.getId()));
+        }
     }
 
     /* TÍNH TỔNG TIỀN */
@@ -143,9 +145,7 @@ public class CartService {
             Account account = accountRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
             cart = new Cart();
-            cart.setAccount(account); // Gán account cho cart
-            // Quan trọng: Lưu cart trước khi trả về
-            // Đảm bảo không bị null ID khi dùng sau này
+            cart.setAccount(account);
             cart = cartRepository.save(cart);
         }
         return cart;

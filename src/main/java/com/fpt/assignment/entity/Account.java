@@ -33,7 +33,6 @@ public class Account {
 
     private boolean enabled = true;
 
-
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<Order> orders;
 }

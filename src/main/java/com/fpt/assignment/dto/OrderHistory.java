@@ -16,4 +16,13 @@ public class OrderHistory {
   private String address;
   private Integer status = 0;
   private BigDecimal totalPrice;
+  private String phone;
+
+  public OrderHistory(Long id, LocalDateTime createDate, String address, Integer status, BigDecimal totalPrice) {
+    this.id = id;
+    this.createDate = createDate;
+    this.address = address;
+    this.status = status;
+    this.totalPrice = totalPrice;
+  }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -36,7 +37,8 @@ public class CheckoutController {
     public String checkout(Model model, HttpSession session) {
 
         Account user = (Account) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         OrderForm form = new OrderForm();
         form.setEmail(user.getEmail());
@@ -45,23 +47,29 @@ public class CheckoutController {
         model.addAttribute("orderForm", form);
         model.addAttribute(
                 "cartItems",
-                cartService.getCartItems(user.getEmail())
-        );
+                cartService.getCartItems(user.getEmail()));
         model.addAttribute(
                 "cartTotal",
-                cartService.getTotal(user.getEmail())
-        );
+                cartService.getTotal(user.getEmail()));
 
         return "views/checkout/checkout";
     }
 
     @PostMapping
+    @Transactional
     public String placeOrder(@ModelAttribute OrderForm form,
-                             HttpSession session,
-                             RedirectAttributes redirect) {
+            HttpSession session,
+            RedirectAttributes redirect) {
 
         Account user = (Account) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
+
+        // Tính phí vận chuyển
+        java.math.BigDecimal shippingFee = java.math.BigDecimal.ZERO;
+        if ("express".equals(form.getShippingMethod())) {
+            shippingFee = new java.math.BigDecimal("50000");
+        }
 
         Order order = new Order();
         order.setAccount(user);
@@ -69,6 +77,7 @@ public class CheckoutController {
         order.setPhone(form.getPhone());
         order.setStatus(0);
         order.setCreateDate(LocalDateTime.now());
+        order.setShippingFee(shippingFee);
 
         orderRepository.save(order);
 
