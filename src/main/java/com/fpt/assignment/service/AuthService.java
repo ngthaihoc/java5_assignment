@@ -7,8 +7,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fpt.assignment.dto.LoginForm;
-import com.fpt.assignment.dto.RegisterForm;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.entity.Cart;
 import com.fpt.assignment.repository.AccountRepository;
@@ -40,13 +38,8 @@ public class AuthService {
         return String.valueOf(otp);
     }
 
-    public Optional<Account> createAccount(RegisterForm dto) {
-        Account newAccount = new Account();
-
-        newAccount.setEmail(dto.getEmail());
-        newAccount.setFullname(dto.getFirstName() + " " + dto.getLastName());
-        newAccount.setPassword(dto.getPassword());
-
+    public Optional<Account> createAccount(Account newAccount) {
+        // Assume fullname is populated in controller or by user
         Account account = accountRepository.save(newAccount);
 
         Cart cart = new Cart();
@@ -56,11 +49,11 @@ public class AuthService {
         return Optional.of(account);
     }
 
-    public Account authenticate(LoginForm dto) {
-        Account acc = accountRepository.findByEmail(dto.getEmail())
+    public Account authenticate(String email, String password) {
+        Account acc = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Email không tồn tại!"));
 
-        if (!dto.getPassword().equals(acc.getPassword())) {
+        if (!password.equals(acc.getPassword())) {
             throw new RuntimeException("Mật khẩu không chính xác!");
         }
 
@@ -84,6 +77,23 @@ public class AuthService {
 
         accountRepository.save(acc);
 
+    }
+
+    public Account loginFromCookie(Cookie[] cookies) {
+        if (cookies == null)
+            return null;
+
+        for (Cookie cookie : cookies) {
+            if ("user".equals(cookie.getName())) {
+                try {
+                    String email = new String(Base64.getDecoder().decode(cookie.getValue()));
+                    return accountRepository.findByEmail(email).orElse(null);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 
     public boolean isEmailNotExisted(String email) {

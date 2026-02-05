@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fpt.assignment.dto.CartItemDTO;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.entity.Book;
 import com.fpt.assignment.entity.Cart;
@@ -32,26 +31,14 @@ public class CartService {
     AccountRepository accountRepository;
 
     /* LẤY DANH SÁCH GIỎ HÀNG */
-    public List<CartItemDTO> getCartItems(String email) {
+    public List<CartDetail> getCartItems(String email) {
 
         Cart cart = getOrCreateCart(email);
 
         return cartDetailRepository.findByCart_Id(cart.getId())
                 .stream()
-                .map(d -> {
-                    CartItemDTO dto = new CartItemDTO();
-                    dto.setCartDetailId(d.getId());
-                    dto.setBook(d.getBook());
-                    dto.setTitle(d.getBook().getTitle());
-                    dto.setImage(d.getBook().getImage());
-                    dto.setAuthor(d.getBook().getAuthorName());
-                    dto.setBook(d.getBook());
-                    dto.setPrice(d.getBook().getPrice());
-                    dto.setQuantity(d.getQuantity());
-                    dto.setTotal(
-                            d.getBook().getPrice()
-                                    .multiply(BigDecimal.valueOf(d.getQuantity())));
-                    return dto;
+                .peek(d -> {
+                    d.setTotal(d.getBook().getPrice().multiply(BigDecimal.valueOf(d.getQuantity())));
                 })
                 .toList();
     }
@@ -100,18 +87,20 @@ public class CartService {
 
     /* XÓA TOÀN BỘ GIỎ HÀNG */
     public void clear(String email) {
+        Cart cart = cartRepository.findByAccount_Email(email);
 
-        Cart cart = getOrCreateCart(email);
-
-        cartDetailRepository.deleteAll(
-                cartDetailRepository.findByCart_Id(cart.getId()));
+        // Chỉ xóa nếu cart tồn tại
+        if (cart != null) {
+            cartDetailRepository.deleteAll(
+                    cartDetailRepository.findByCart_Id(cart.getId()));
+        }
     }
 
     /* TÍNH TỔNG TIỀN */
     public BigDecimal getTotal(String email) {
 
         return getCartItems(email).stream()
-                .map(CartItemDTO::getTotal)
+                .map(CartDetail::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -144,8 +133,9 @@ public class CartService {
                     .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
             cart = new Cart();
             cart.setAccount(account);
-            cartRepository.save(cart);
+            cart = cartRepository.save(cart);
         }
         return cart;
     }
+
 }

@@ -1,17 +1,15 @@
 package com.fpt.assignment.entity;
 
-import java.util.List;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "accounts")
@@ -24,6 +22,7 @@ public class Account {
     @Column
     private String email;
 
+    @JsonIgnore // Bảo mật: không trả password về client
     @Column(nullable = false)
     private String password;
 
@@ -38,6 +37,23 @@ public class Account {
 
     private boolean enabled = true;
 
+    @JsonIgnore // Tránh vòng lặp: Account -> Order -> Account
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<Order> orders;
+
+    // ================= TRANSIENT FIELDS (REPLACING DTOs) =================
+    @Transient
+    private String rank;
+
+    @Transient
+    private BigDecimal totalSpent;
+
+    @Transient
+    private long orderCount;
+
+    @Transient
+    private LocalDateTime latestOrder;
+
+    @Transient
+    private String address; // For customer detail
 }

@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "books")
@@ -49,12 +50,18 @@ public class Book {
     @Column(name = "page_count")
     private Integer pageCount;
 
+    @Column(name = "is_ebook")
+    private Boolean isEbook = false;
+
     private Boolean available = true;
 
+    // Chỉ lấy id và name của Category, tránh load books
+    @JsonIgnoreProperties({ "books" })
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
+    // Chỉ serialize các field cần thiết của Publisher
     @ManyToOne
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
@@ -62,4 +69,7 @@ public class Book {
     @JsonIgnore
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<CartDetail> cartDetails;
+
+    @Transient
+    private BigDecimal oldPrice;
 }

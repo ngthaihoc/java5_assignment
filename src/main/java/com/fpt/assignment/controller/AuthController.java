@@ -4,12 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.fpt.assignment.dto.LoginForm;
-import com.fpt.assignment.dto.RegisterForm;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.service.AuthService;
 import com.fpt.assignment.utils.XMailer;
@@ -39,17 +37,19 @@ public class AuthController {
 
   @GetMapping("/login")
   public String showLoginForm(Model model) {
-    model.addAttribute("loginForm", new LoginForm());
     return "views/auth/login";
   }
 
   @PostMapping("/login")
-  public String login(@ModelAttribute LoginForm dto, Model model) {
+  public String login(@RequestParam("email") String email,
+      @RequestParam("password") String password,
+      @RequestParam(value = "rememberMe", defaultValue = "false") boolean rememberMe,
+      Model model) {
     try {
-      Account user = authService.authenticate(dto);
+      Account user = authService.authenticate(email, password);
       if (user != null) {
 
-        if (dto.isRememberMe()) {
+        if (rememberMe) {
           authService.saveAccountToCookie(user, response);
         }
 
@@ -72,34 +72,45 @@ public class AuthController {
 
   @GetMapping("/register")
   public String showRegisterForm(Model model) {
-    model.addAttribute("registerForm", new RegisterForm());
     return "views/auth/register";
   }
 
   @PostMapping("/register")
-  public String createAccount(@ModelAttribute("user") RegisterForm dto, Model model) {
+  public String createAccount(@RequestParam("firstName") String firstName,
+      @RequestParam("lastName") String lastName,
+      @RequestParam("email") String email,
+      @RequestParam("password") String password,
+      Model model) {
 
-    boolean validate = authService.isEmailNotExisted(dto.getEmail());
+    boolean validate = authService.isEmailNotExisted(email);
 
     if (!validate) {
       model.addAttribute("error", "Email đã tồn tại");
-      dto.setEmail("");
-      model.addAttribute("registerForm", dto);
+      model.addAttribute("email", email);
+      model.addAttribute("firstName", firstName);
+      model.addAttribute("lastName", lastName);
       return "views/auth/register";
     }
 
     String otp = authService.generateOTP();
 
     session.setAttribute("otp", otp);
-    session.setAttribute("registerDTO", dto);
+
+    // Store register info in session as Account or map, or individual fields
+    Account pendingAccount = new Account();
+    pendingAccount.setEmail(email);
+    pendingAccount.setFullname(firstName + " " + lastName);
+    pendingAccount.setPassword(password);
+    session.setAttribute("registerAccount", pendingAccount);
+
     session.setAttribute("otpAction", "register");
 
     // Gửi email
     String subject = "Xác thực tài khoản";
     String body = "Mã OTP của bạn là: " + otp;
-    XMailer.send(dto.getEmail(), subject, body);
+    XMailer.send(email, subject, body);
 
-    return "redirect:/verify?email=" + dto.getEmail();
+    return "redirect:/verify?email=" + email;
   }
 
   @GetMapping("/verify")
@@ -121,9 +132,9 @@ public class AuthController {
         return "views/auth/resetPassword";
       }
 
-      RegisterForm registerDTO = (RegisterForm) session.getAttribute("registerDTO");
-      if (registerDTO != null) {
-        Account account = authService.createAccount(registerDTO).orElse(null);
+      Account registerAccount = (Account) session.getAttribute("registerAccount");
+      if (registerAccount != null) {
+        Account account = authService.createAccount(registerAccount).orElse(null);
         if (account != null) {
           session.setAttribute("user", account);
         }
@@ -131,16 +142,16 @@ public class AuthController {
 
       // Cleanup
       session.removeAttribute("otp");
-      session.removeAttribute("registerDTO");
+      session.removeAttribute("registerAccount");
       session.removeAttribute("otpAction");
 
       return "redirect:/home";
 
     } else {
       String email = "";
-      RegisterForm registerDTO = (RegisterForm) session.getAttribute("registerDTO");
-      if (registerDTO != null) {
-        email = registerDTO.getEmail();
+      Account registerAccount = (Account) session.getAttribute("registerAccount");
+      if (registerAccount != null) {
+        email = registerAccount.getEmail();
       } else {
         email = (String) session.getAttribute("forgotEmail");
       }
@@ -154,8 +165,12 @@ public class AuthController {
   }
 
   @PostMapping("/change-password")
-  public String changePassword(@RequestParam("newPassword") String newPassword) {
+  public String changePassword(@RequestParam("newPassword") String newPassword, Model model) {
     String email = (String) session.getAttribute("forgotEmail");
+    if (email == null) {
+      return "redirect:/forgot-password?error=session_expired";
+    }
+
     authService.updatePassword(email, newPassword);
 
     // Xoá các thuộc tính liên quan trong session
@@ -163,7 +178,7 @@ public class AuthController {
     session.removeAttribute("forgotEmail");
     session.removeAttribute("otpAction");
 
-    return "redirect:/login";
+    return "redirect:/login?message=changed_password";
   }
 
   @PostMapping("/forgot-password")

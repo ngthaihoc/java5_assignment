@@ -1,5 +1,6 @@
 package com.fpt.assignment.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ public class Cart {
     private Long id;
 
     // FK → cart.email → accounts.email
+    @JsonIgnore // Tránh vòng lặp: Cart -> Account
     @ManyToOne
     @JoinColumn(name = "email")
     private Account account;
@@ -24,5 +26,3 @@ public class Cart {
     private List<CartDetail> details;
 
 }
-
-

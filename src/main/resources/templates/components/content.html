@@ -4,6 +4,22 @@
 <body>
     <link th:href="@{/css/home.css}" rel="stylesheet" />
 
+    <!-- Success/Error Notification -->
+    <div th:if="${success}"
+        class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
+        style="z-index: 9999; min-width: 300px;" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}"
+        class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
+        style="z-index: 9999; min-width: 300px;" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
     <div class="container my-4">
         <section id="main-slider" class="mb-5">
             <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
@@ -70,17 +86,13 @@
                                 <!-- Thêm chức năng thêm vào giỏ hàng ở đây-->
                                 <form th:action="@{/cart/add}" method="post">
                                     <input type="hidden" name="bookId" th:value="${book.id}" />
+                                    <input type="hidden" name="returnUrl" value="/home#top-selling" />
                                     <div class="d-grid gap-2">
                                         <button type="submit" class="btn btn-sm btn-addtocart">
                                             <i class="fas fa-shopping-cart me-1"></i> Thêm vào giỏ
                                         </button>
                                     </div>
                                 </form>
-                                <div th:if="${success}"
-                                    class="alert alert-success alert-dismissible fade show mt-3 w-50">
-                                    <span th:text="${success}"></span>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -137,6 +149,7 @@
 
                     <form th:action="@{/cart/add}" method="post">
                         <input type="hidden" name="bookId" th:value="${lastestBook.id}" />
+                        <input type="hidden" name="returnUrl" value="/home#new-releases" />
                         <button type="submit" class="btn btn-dark btn-lg rounded-pill px-4 w-100 shadow">
                             <i class="fas fa-shopping-cart me-2"></i> ĐẶT MUA SÁCH NGAY
                         </button>
@@ -198,7 +211,8 @@
 
                 <a class="btn btn-outline-dark" th:each=" cate : ${categories}"
                     th:href="@{/home(cateid=${cate.id})} + '#books-for-you'" th:text="${cate.name}"
-                    th:classappend="${#strings.equals(param.cateid, cate.id)} ? 'active'">Tên Thể Loại</a>
+                    th:classappend="${param.cateid != null and #strings.toString(cate.id).equals(param.cateid[0])} ? 'active'">Tên
+                    Thể Loại</a>
             </div>
 
             <div class="row g-4">
@@ -227,8 +241,9 @@
                                         th:text="${#numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
                                 </div>
 
-                                <form th:action="@{/cart/add/{id}(id=${book.id})}" method="post">
+                                <form th:action="@{/cart/add}" method="post">
                                     <input type="hidden" name="bookId" th:value="${book.id}" />
+                                    <input type="hidden" name="returnUrl" value="/home#books-for-you" />
                                     <div class="d-grid gap-2">
                                         <button type="submit" class="btn btn-outline-dark btn-sm btn-addtocart">
                                             <i class="fas fa-shopping-cart me-1"></i> Thêm vào giỏ
@@ -236,9 +251,6 @@
                                     </div>
                                 </form>
                             </div>
-                            <script th:if="${success}">
-                                alert("[[${success}]]");
-                            </script>
                         </div>
                     </div>
                 </div>
@@ -250,7 +262,7 @@
         </section>
     </div>
 
-    <body />
+
 </body>
 
 </html>

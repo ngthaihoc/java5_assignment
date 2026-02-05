@@ -25,10 +25,10 @@ public class MainPageController {
 
     @RequestMapping("/home")
     public String mainPage(Model model, @RequestParam("cateid") Optional<Long> cateid) {
-//      Top sách
-        model.addAttribute("topBooks", bookRepo.findAll(PageRequest.of(0, 8)).getContent());
+        // Top sách (chỉ lấy sách available)
+        model.addAttribute("topBooks", bookRepo.findAllByOrderByPublishDateDesc(PageRequest.of(0, 8)));
 
-//      thể loại
+        // thể loại
         model.addAttribute("categories", categoryRepo.findAll());
 
         List<Book> list;
@@ -38,7 +38,7 @@ public class MainPageController {
             list = bookRepo.findAll(PageRequest.of(0, 8)).getContent();
         }
 
-//      Sách mới
+        // Sách mới
         List<Book> newestList = bookRepo.findAllByOrderByPublishDateDesc(PageRequest.of(0, 5));
         if (!newestList.isEmpty()) {
             model.addAttribute("lastestBook", newestList.get(0));
