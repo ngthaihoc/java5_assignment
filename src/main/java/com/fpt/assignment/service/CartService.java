@@ -79,20 +79,6 @@ public class CartService {
         cartDetailRepository.save(detail);
     }
 
-    /* CẬP NHẬT SỐ LƯỢNG */
-    public void updateQuantity(Long cartDetailId, int quantity) {
-
-        CartDetail detail = cartDetailRepository.findById(cartDetailId)
-                .orElseThrow(() -> new RuntimeException("Item không tồn tại"));
-
-        if (quantity <= 0) {
-            cartDetailRepository.delete(detail);
-        } else {
-            detail.setQuantity(quantity);
-            cartDetailRepository.save(detail);
-        }
-    }
-
     /* XÓA 1 SẢN PHẨM */
     public void remove(Long cartDetailId) {
         cartDetailRepository.deleteById(cartDetailId);
@@ -116,24 +102,50 @@ public class CartService {
     }
 
     public void addToCart(String email, Long bookId, int quantity) {
-        if (quantity < 1) {
-            quantity = 1;
-        }
+        if (quantity < 1) quantity = 1;
 
         Cart cart = getOrCreateCart(email);
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("Sách không tồn tại"));
 
         CartDetail detail = cartDetailRepository.findByCart_IdAndBook_Id(cart.getId(), bookId);
+
+        int currentInCart = (detail == null) ? 0 : detail.getQuantity();
+        int newTotal = currentInCart + quantity;
+
+        // Check tồn kho
+        if (newTotal > book.getQuantity()) {
+            throw new RuntimeException("Chỉ còn " + book.getQuantity() + " cuốn trong kho!");
+        }
 
         if (detail == null) {
             detail = new CartDetail();
             detail.setCart(cart);
-            detail.setBook(bookRepository.findById(bookId)
-                    .orElseThrow(() -> new RuntimeException("Sách không tồn tại")));
+            detail.setBook(book);
             detail.setQuantity(quantity);
         } else {
-            detail.setQuantity(detail.getQuantity() + quantity);
+            detail.setQuantity(newTotal);
         }
 
+        cartDetailRepository.save(detail);
+    }
+
+    public void updateQuantity(Long cartDetailId, int quantity) {
+        CartDetail detail = cartDetailRepository.findById(cartDetailId)
+                .orElseThrow(() -> new RuntimeException("Item không tồn tại"));
+
+        if (quantity <= 0) {
+            cartDetailRepository.delete(detail);
+            return;
+        }
+
+        // Check tồn kho
+        int stock = detail.getBook().getQuantity();
+        if (quantity > stock) {
+            throw new RuntimeException("Chỉ còn " + stock + " cuốn trong kho!");
+        }
+
+        detail.setQuantity(quantity);
         cartDetailRepository.save(detail);
     }
 

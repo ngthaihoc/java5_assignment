@@ -116,6 +116,7 @@ public class CustomerServiceImpl implements CustomerService {
                 CustomerDetailDTO dto = new CustomerDetailDTO();
                 dto.setEmail(acc.getEmail());
                 dto.setName(acc.getFullname());
+                dto.setAvatar(acc.getAvatar());
                 dto.setAddress(
                                 orders.stream()
                                                 .map(Order::getAddress)

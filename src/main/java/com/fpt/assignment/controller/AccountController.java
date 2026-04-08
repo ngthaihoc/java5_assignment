@@ -1,139 +1,65 @@
 package com.fpt.assignment.controller;
 
-import java.io.File;
-import java.util.List;
-
+import com.fpt.assignment.dto.ChangePasswordRequest;
+import com.fpt.assignment.entity.Account;
+import com.fpt.assignment.service.AccountService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fpt.assignment.dto.OrderHistory;
-import com.fpt.assignment.entity.Account;
-import com.fpt.assignment.repository.AccountRepository;
-import com.fpt.assignment.repository.OrderDetailRepository;
-import com.fpt.assignment.repository.OrderRepository;
-import com.fpt.assignment.service.AuthService;
-import com.fpt.assignment.service.UploadService;
+import java.io.IOException;
+import java.util.Map;
 
-import jakarta.servlet.http.HttpSession;
-
-@Controller
-@RequestMapping("/auth/account")
+@RestController
+@RequestMapping("/users")
 public class AccountController {
 
     @Autowired
-    OrderDetailRepository detailRepo;
+    AccountService accountService;
 
-    @Autowired
-    HttpSession session;
+    @GetMapping("/me")
+    public ResponseEntity<Account> me(@RequestParam String email) {
+        Account account = accountService.getInfo(email);
 
-    @Autowired
-    AccountRepository accRepo;
+        if (account == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-    @Autowired
-    OrderRepository orderRepo;
-
-    @Autowired
-    AuthService authService;
-
-    @Autowired
-    UploadService upService;
-
-    @GetMapping("")
-    public String viewAccount(Model model) {
-        Account user = authService.getLoggedAccount();
-        model.addAttribute("user", user);
-
-        session.setAttribute("user", user);
-
-        model.addAttribute("currentTab", "profile");
-        return "views/account";
+        return ResponseEntity.ok(account);
     }
 
-    @PostMapping("/update")
-    public String updateAccount(
+    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateAccount(
             @RequestParam("fullname") String fullname,
-            @RequestParam("photo") MultipartFile photo) {
+            @RequestParam("email") String email,
+            @RequestParam(value = "photo", required = false) MultipartFile photo,
+            HttpSession session) throws IOException {
 
-        Account currentUser = authService.getLoggedAccount();
-        System.out.println(currentUser.getEmail());
-        System.out.println(currentUser.getFullname());
-        System.out.println(currentUser.getPassword());
-        currentUser.setFullname(fullname);
+        Account account = accountService.updateAccount(email, fullname, photo, session);
 
-        if (!photo.isEmpty()) {
-            String uploadDir = System.getProperty("user.dir")
-                    + "/src/main/resources/static/images/";
+        if (account == null) {
+            return ResponseEntity.notFound().build();
+        }
 
-            File savedFile = upService.save(photo, uploadDir);
+        return ResponseEntity.ok(account);
+    }
 
-            if (savedFile != null) {
-                currentUser.setAvatar(savedFile.getName());
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            boolean isChanged = accountService.changePassword(request);
+            if (isChanged) {
+                return ResponseEntity.ok(Map.of("message", "Đổi mật khẩu thành công!"));
             }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Không tìm thấy người dùng"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", e.getMessage()));
         }
-
-        accRepo.save(currentUser);
-        System.out.println("testing avatar " + currentUser.getAvatar());
-
-        return "redirect:/auth/account";
     }
-
-    @GetMapping("/orders")
-    public String viewOrders(Model model, HttpSession session) {
-        Account user = authService.getLoggedAccount();
-
-        List<OrderHistory> list = orderRepo.findByUsername(user.getEmail());
-        model.addAttribute("user", user);
-        model.addAttribute("orders", list);
-        model.addAttribute("currentTab", "orders");
-        return "views/account";
-    }
-
-    @PostMapping("/change-password")
-    public String changePassword(Model model, HttpSession session,
-            @RequestParam("oldPass") String oldPass,
-            @RequestParam("newPass") String newPass,
-            @RequestParam("confirmPass") String confirmPass) {
-        Account user = authService.getLoggedAccount();
-        model.addAttribute("user", user);
-        if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
-            model.addAttribute("error", "Vui lòng điền đầy đủ thông tin");
-            model.addAttribute("currentTab", "password");
-            return "views/account";
-        }
-
-        if (!user.getPassword().equals(oldPass)) {
-            model.addAttribute("error", "Mật khẩu cũ không đúng");
-            model.addAttribute("currentTab", "password");
-            return "views/account";
-        }
-
-        if (!newPass.equals(confirmPass)) {
-            model.addAttribute("error", "Xác nhận mật khẩu mới không trùng khớp");
-            model.addAttribute("currentTab", "password");
-            return "views/account"; // Kết thúc sớm nếu sai
-        }
-
-        user.setPassword(newPass);
-        accRepo.save(user);
-
-        model.addAttribute("message", "Đổi mật khẩu thành công!");
-        model.addAttribute("currentTab", "password");
-        return "views/account";
-    }
-
-    @GetMapping("/change-password")
-    public String changePassword(Model model) {
-        Account user = authService.getLoggedAccount();
-        model.addAttribute("user", user);
-        model.addAttribute("currentTab", "password");
-
-        return "views/account";
-    }
-
 }

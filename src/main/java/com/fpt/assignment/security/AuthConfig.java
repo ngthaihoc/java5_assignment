@@ -13,7 +13,7 @@ public class AuthConfig implements WebMvcConfigurer {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(authInterceptor)
-        .addPathPatterns("/auth/**", "/admin/**", "/cart/**") // Những path cần bảo vệ
+        .addPathPatterns("/auth/**", "/admin/**") // Những path cần bảo vệ
         .excludePathPatterns("/login", "/register"); // Những path cho phép vào tự do
   }
 }

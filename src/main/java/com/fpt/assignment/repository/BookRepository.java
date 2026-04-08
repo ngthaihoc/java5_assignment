@@ -18,19 +18,22 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findAll();
 
     @Query("SELECT b FROM Book b WHERE b.category.id = ?1")
-    List<Book> findByCategoryId(Long cateid, PageRequest of);
+    Page<Book> findByCategoryId(Long cateid, PageRequest of);
 
     @Query("SELECT b FROM Book b WHERE b.category.id = :categoryId AND b.id <> :bookId ORDER BY function('RAND')")
     Page<Book> findRelatedBooks(@Param("categoryId") Long categoryId, @Param("bookId") Long bookId, Pageable pageable);
 
-    List<Book> findAllByOrderByPublishDateDesc(PageRequest of);
+    Page<Book> findAllByOrderByPublishDateDesc(PageRequest of);
 
     Page<Book> findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(String keyword1, String keyword2,
                                                                                Pageable pageable);
 
-    @Query("SELECT b FROM Book b WHERE (:keyword IS NULL OR b.title LIKE %:keyword%) AND (:category IS NULL OR b.category.id = :category) AND (:minPrice IS NULL OR b.price >= :minPrice) AND (:maxPrice IS NULL OR b.price <= :maxPrice)")
-    Page<Book> searchBooksWithFilter(String keyword, Long category, Integer minPrice, Integer maxPrice,
-                                     Pageable pageable);
     boolean existsByPublisher_Id(Long id);
 
+    @Query("SELECT b FROM Book b WHERE (:keyword IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND (:category IS NULL OR b.category.id = :category) AND(:minPrice IS NULL OR b.price >= :minPrice) AND (:maxPrice IS NULL OR b.price <= :maxPrice)")
+    Page<Book> searchBooksWithFilter(@Param("keyword") String keyword,  // Thêm @Param ở đây
+                                     @Param("category") Integer category,
+                                     @Param("minPrice") Double minPrice,
+                                     @Param("maxPrice") Double maxPrice,
+                                     Pageable pageable);
 }

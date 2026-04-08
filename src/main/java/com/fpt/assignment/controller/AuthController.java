@@ -1,216 +1,138 @@
 package com.fpt.assignment.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.fpt.assignment.dto.LoginForm;
 import com.fpt.assignment.dto.RegisterForm;
 import com.fpt.assignment.entity.Account;
+import com.fpt.assignment.security.JwtService;
 import com.fpt.assignment.service.AuthService;
 import com.fpt.assignment.utils.XMailer;
-
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/auth")
 public class AuthController {
 
-  @Autowired
-  XMailer xMailer;
+    @Autowired
+    AuthService authService;
 
-  @Autowired
-  AuthService authService;
+    @Autowired
+    JwtService jwtService;
 
-  @Autowired
-  HttpSession session;
+    @Autowired
+    HttpSession session; // Vẫn dùng session cho OTP flow
 
-  @Autowired
-  HttpServletRequest req;
+    // ĐĂNG NHẬP → trả JWT
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginForm dto) {
+        try {
+            Account user = authService.authenticate(dto);
+            String token = jwtService.generateToken(user.getEmail());
 
-  @Autowired
-  HttpServletResponse response;
+            return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "email", user.getEmail(),
+                    "fullname", user.getFullname(),
+                    "avatar", user.getAvatar() != null ? user.getAvatar() : "",
+                    "isAdmin", user.isAdmin()
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
+        }
+    }
 
-  @GetMapping("/login")
-  public String showLoginForm(Model model) {
-    model.addAttribute("loginForm", new LoginForm());
-    return "views/auth/login";
-  }
+    // ĐĂNG XUẤT (chỉ cần xóa token ở client)
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok(Map.of("message", "Đăng xuất thành công"));
+    }
 
-  @PostMapping("/login")
-  public String login(@ModelAttribute LoginForm dto, Model model) {
-    try {
-      Account user = authService.authenticate(dto);
-      if (user != null) {
-
-        if (dto.isRememberMe()) {
-          authService.saveAccountToCookie(user, response);
+    // ĐĂNG KÝ → gửi OTP
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterForm dto) {
+        if (!authService.isEmailNotExisted(dto.getEmail())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email đã tồn tại"));
         }
 
-        session.setAttribute("user", user);
+        String otp = authService.generateOTP();
+        session.setAttribute("otp", otp);
+        session.setAttribute("registerDTO", dto);
+        session.setAttribute("otpAction", "register");
 
-        if (session.getAttribute("back-url") != null) {
-          String backUrl = (String) session.getAttribute("back-url");
-          session.removeAttribute("back-url");
-          return "redirect:" + backUrl;
+        XMailer.send(dto.getEmail(), "Xác thực tài khoản", "Mã OTP: " + otp);
+        return ResponseEntity.ok(Map.of("message", "OTP_SENT"));
+    }
+
+    // XÁC THỰC OTP
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verify(@RequestParam String otpCode) {
+        String serverOtp = (String) session.getAttribute("otp");
+
+        if (serverOtp != null && serverOtp.equals(otpCode)) {
+            String otpAction = (String) session.getAttribute("otpAction");
+
+            if ("register".equals(otpAction)) {
+                RegisterForm dto = (RegisterForm) session.getAttribute("registerDTO");
+                Account account = authService.createAccount(dto).orElse(null);
+
+                session.removeAttribute("otp");
+                session.removeAttribute("registerDTO");
+                session.removeAttribute("otpAction");
+
+                // Trả JWT luôn sau khi đăng ký xong
+                String token = jwtService.generateToken(account.getEmail());
+                return ResponseEntity.ok(Map.of(
+                        "message", "REGISTER_SUCCESS",
+                        "token", token,
+                        "email", account.getEmail(),
+                        "fullname", account.getFullname()
+                ));
+            }
+
+            if ("forgot".equals(otpAction)) {
+                return ResponseEntity.ok(Map.of("message", "OTP_VALID_FOR_RESET"));
+            }
+        }
+        return ResponseEntity.badRequest().body(Map.of("message", "Mã OTP không chính xác"));
+    }
+
+    // QUÊN MẬT KHẨU
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        if (authService.isEmailNotExisted(email)) {
+            return ResponseEntity.status(404).body(Map.of("message", "Email không tồn tại"));
         }
 
-        return "redirect:/home";
-      }
-      model.addAttribute("error", "Sai email hoặc mật khẩu");
-    } catch (RuntimeException e) {
-      model.addAttribute("error", e.getMessage());
-    }
-    return "views/auth/login";
-  }
+        String otp = authService.generateOTP();
+        session.setAttribute("otp", otp);
+        session.setAttribute("forgotEmail", email);
+        session.setAttribute("otpAction", "forgot");
 
-  @GetMapping("/register")
-  public String showRegisterForm(Model model) {
-    model.addAttribute("registerForm", new RegisterForm());
-    return "views/auth/register";
-  }
-
-  @PostMapping("/register")
-  public String createAccount(@ModelAttribute("user") RegisterForm dto, Model model) {
-
-    boolean validate = authService.isEmailNotExisted(dto.getEmail());
-
-    if (!validate) {
-      model.addAttribute("error", "Email đã tồn tại");
-      dto.setEmail("");
-      model.addAttribute("registerForm", dto);
-      return "views/auth/register";
+        XMailer.send(email, "Đổi mật khẩu tài khoản", "Mã OTP của bạn là: " + otp);
+        return ResponseEntity.ok(Map.of("message", "OTP_SENT"));
     }
 
-    String otp = authService.generateOTP();
+    // ĐỔI MẬT KHẨU (sau forgot)
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestParam String newPassword) {
+        String email = (String) session.getAttribute("forgotEmail");
 
-    session.setAttribute("otp", otp);
-    session.setAttribute("registerDTO", dto);
-    session.setAttribute("otpAction", "register");
-
-    // Gửi email
-    String subject = "Xác thực tài khoản";
-    String body = "Mã OTP của bạn là: " + otp;
-    XMailer.send(dto.getEmail(), subject, body);
-
-    return "redirect:/verify?email=" + dto.getEmail();
-  }
-
-  @GetMapping("/verify")
-  public String showVerifyForm(@RequestParam("email") String email, Model model,
-      @RequestParam(value = "error", required = false) String error) {
-    model.addAttribute("email", email);
-    model.addAttribute("error", error != null);
-    return "views/auth/verify";
-  }
-
-  @PostMapping("/verify-otp")
-  public String verify(HttpSession session, HttpServletResponse response, @RequestParam("otpCode") String userOtp) {
-    String serverOtp = (String) session.getAttribute("otp");
-
-    if (serverOtp != null && serverOtp.equals(userOtp)) {
-      String otpAction = (String) session.getAttribute("otpAction");
-
-      if ("forgot".equals(otpAction)) {
-        return "views/auth/resetPassword";
-      }
-
-      RegisterForm registerDTO = (RegisterForm) session.getAttribute("registerDTO");
-      if (registerDTO != null) {
-        Account account = authService.createAccount(registerDTO).orElse(null);
-        if (account != null) {
-          session.setAttribute("user", account);
+        if (email == null) {
+            return ResponseEntity.status(400).body(Map.of("message", "Phiên làm việc hết hạn"));
         }
-      }
 
-      // Cleanup
-      session.removeAttribute("otp");
-      session.removeAttribute("registerDTO");
-      session.removeAttribute("otpAction");
-
-      return "redirect:/home";
-
-    } else {
-      String email = "";
-      RegisterForm registerDTO = (RegisterForm) session.getAttribute("registerDTO");
-      if (registerDTO != null) {
-        email = registerDTO.getEmail();
-      } else {
-        email = (String) session.getAttribute("forgotEmail");
-      }
-      return "redirect:/verify?email=" + (email == null ? "" : email) + "&error=true";
+        try {
+            authService.updatePassword(email, newPassword);
+            session.removeAttribute("otp");
+            session.removeAttribute("forgotEmail");
+            session.removeAttribute("otpAction");
+            return ResponseEntity.ok(Map.of("message", "PASSWORD_CHANGED"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("message", "Lỗi khi cập nhật mật khẩu"));
+        }
     }
-  }
-
-  @GetMapping("/forgot-password")
-  public String showForgotForm() {
-    return "views/auth/forgot";
-  }
-
-  @PostMapping("/change-password")
-  public String changePassword(@RequestParam("newPassword") String newPassword) {
-    String email = (String) session.getAttribute("forgotEmail");
-    authService.updatePassword(email, newPassword);
-
-    // Xoá các thuộc tính liên quan trong session
-    session.removeAttribute("otp");
-    session.removeAttribute("forgotEmail");
-    session.removeAttribute("otpAction");
-
-    return "redirect:/login";
-  }
-
-  @PostMapping("/forgot-password")
-  public String forgotPassword(@RequestParam("email") String email, Model model) {
-
-    boolean validate = authService.isEmailNotExisted(email);
-
-    if (validate) {
-      model.addAttribute("error", "Email không tồn tại trong hệ thống");
-      return "views/auth/forgot";
-    }
-
-    String otp = authService.generateOTP();
-
-    session.setAttribute("otp", otp);
-    session.setAttribute("forgotEmail", email);
-    session.setAttribute("otpAction", "forgot");
-
-    // Gửi email
-    String subject = "Đổi mật khẩu tài khoản";
-    String body = "Mã OTP của bạn là: " + otp;
-    XMailer.send(email, subject, body);
-
-    return "redirect:/verify?email=" + email;
-  }
-
-  @GetMapping("/test")
-  public String getMethodName() {
-    System.out.println("Test auth controller" + session.getAttribute("user"));
-    return "views/auth/resetPassword";
-  }
-
-  @GetMapping("/logout")
-  public String logout() {
-    // 1. Huỷ Session
-    if (session != null) {
-      session.invalidate();
-    }
-
-    // 2. Xoá sạch Cookie
-    Cookie cookie = new Cookie("user", "");
-    cookie.setMaxAge(0); // Xóa cookie
-    cookie.setPath("/");
-    response.addCookie(cookie);
-
-    return "redirect:/login";
-
-  }
-
 }

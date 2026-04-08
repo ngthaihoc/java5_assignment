@@ -2,6 +2,7 @@ package com.fpt.assignment.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,6 +26,7 @@ public class Account {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(name = "fullname", length = 100, nullable = false)
@@ -39,5 +41,6 @@ public class Account {
     private boolean enabled = true;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Order> orders;
 }

@@ -41,12 +41,10 @@ public class BookService {
                 .getContent();
     }
 
-    public Page<Book> searchBooks(String keyword, Pageable pageable) {
-        if (keyword == null || keyword.isEmpty()) {
-            return bookRepository.findAll(pageable);
-        }
-        return bookRepository.findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(keyword, keyword,
-                pageable);
+    public Page<Book> searchBooksWithFilter(String kw, Integer category, Double minPrice, Double maxPrice, Pageable pageable) {
+        String searchKeyword = (kw == null || kw.trim().isEmpty()) ? null : kw;
+
+        return bookRepository.searchBooksWithFilter(searchKeyword, category, minPrice, maxPrice, pageable);
     }
 
     public Book findById(Long id) {
@@ -80,20 +78,11 @@ public class BookService {
         return categoryRepository.findAll();
     }
 
-    public Page<Book> searchBooksWithFilter(
-            String keyword,
-            Long categoryId,
-            Integer minPrice,
-            Integer maxPrice,
-            Pageable pageable) {
-        if (keyword == null || keyword.isEmpty()) {
-            keyword = "";
-        }
-        return bookRepository.searchBooksWithFilter(
-                keyword,
-                categoryId,
-                minPrice,
-                maxPrice,
-                pageable);
+    public Page<Book> getNewestBooks(PageRequest of) {
+        return bookRepository.findAllByOrderByPublishDateDesc(of);
+    }
+
+    public Page<Book> getBooksByCategoryId(Long cateId, PageRequest of) {
+        return bookRepository.findByCategoryId(cateId, of);
     }
 }

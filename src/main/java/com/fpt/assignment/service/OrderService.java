@@ -2,13 +2,29 @@ package com.fpt.assignment.service;
 
 import com.fpt.assignment.entity.Book;
 import com.fpt.assignment.entity.Order;
+import com.fpt.assignment.repository.OrderDetailRepository;
+import com.fpt.assignment.repository.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
+public class OrderService {
 
-public interface OrderService {
-  Order findById(Long id);
+    @Autowired
+    OrderRepository orderRepository;
 
-  List<Order> findByEmail(String email);
+    public Order findById(Long id) {
+        return orderRepository.findById(id).orElse(null);
+    }
 
-  List<Book> findPurchasedBooks(String email);
+    public List<Order> findByEmail(String email) {
+        return orderRepository.findByEmail(email);
+    }
+
+    public List<Book> findPurchasedBooks(String email) {
+        return orderRepository.findPurchasedBooks(email);
+    }
 }
+

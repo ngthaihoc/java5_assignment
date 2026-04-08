@@ -1,5 +1,6 @@
 package com.fpt.assignment.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,6 +24,7 @@ public class OrderDetails {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
+    @JsonIgnore
     private Order order;
 
 }

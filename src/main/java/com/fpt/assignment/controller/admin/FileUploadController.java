@@ -1,41 +1,36 @@
 package com.fpt.assignment.controller.admin;
 
+import com.fpt.assignment.utils.FileService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 import java.util.UUID;
 
-@Controller
+@RestController
+@RequestMapping("/api/admin")
+@RequiredArgsConstructor
 public class FileUploadController {
 
-    private static final String UPLOAD_DIR =
-            System.getProperty("user.dir") + "/src/main/resources/static/images/books";
+    private final FileService fileService;
 
-    @PostMapping("admin/books/upload-image")
-    @ResponseBody
-    public String handleImageUpload(@RequestParam("file") MultipartFile file) throws IOException {
-        if (file.isEmpty()) return "default-book.png";
+    @PostMapping(value = "/books/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadBookImage(@RequestParam("file") MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "File rỗng"));
+        }
 
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-
-        Path targetPath = Paths.get("target/classes/static/images/books/" + fileName);
-        Path srcPath = Paths.get("src/main/resources/static/images/books/" + fileName);
-
-        Files.createDirectories(targetPath.getParent());
-        Files.createDirectories(srcPath.getParent());
-
-
-        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        Files.copy(file.getInputStream(), srcPath, StandardCopyOption.REPLACE_EXISTING);
-
-        return fileName;
+        String fileName = fileService.saveFile(file, "books");
+        return ResponseEntity.ok(Map.of("fileName", fileName));
     }
 }

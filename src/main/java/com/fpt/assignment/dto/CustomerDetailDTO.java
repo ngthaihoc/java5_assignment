@@ -12,6 +12,7 @@ public class CustomerDetailDTO {
     private String email;
     private String name;
     private String address;
+    private String avatar;
 
     private long totalOrders;
     private BigDecimal totalAmount;

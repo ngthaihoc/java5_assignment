@@ -1,38 +1,60 @@
 package com.fpt.assignment.controller;
 
+import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/order")
+import java.util.Map;
+
+@RestController
+@RequestMapping("/orders")
 public class OrderController {
+
     @Autowired
     OrderService orderService;
+
     @Autowired
     HttpServletRequest request;
 
-    @RequestMapping("/list")
-    public String list(Model model) {
-        String email = request.getRemoteUser();
-        model.addAttribute("orders", orderService.findByEmail(email));
-        return "views/order/order-list";
+    // GET /orders — Danh sách đơn hàng của user
+    @GetMapping
+    public ResponseEntity<?> getMyOrders() {
+        Account user = (Account) request.getAttribute("currentUser");
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Vui lòng đăng nhập"));
+
+        return ResponseEntity.ok(orderService.findByEmail(user.getEmail()));
     }
 
-    @RequestMapping("/detail/{id}")
-    public String detail(@PathVariable("id") Long id, Model model) {
-        System.out.println(id);
-        model.addAttribute("order", orderService.findById(id));
-        return "views/order/order-detail";
+    // GET /orders/{id} — Chi tiết 1 đơn hàng
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOrderDetail(@PathVariable Long id) {
+        Account user = (Account) request.getAttribute("currentUser");
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Vui lòng đăng nhập"));
+
+        var order = orderService.findById(id);
+        if (order == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Không tìm thấy đơn hàng"));
+
+        return ResponseEntity.ok(order);
     }
 
-    @RequestMapping("/my-product-list")
-    public String myProductList(Model model) {
-        String email = request.getRemoteUser();
-        model.addAttribute("books", orderService.findPurchasedBooks(email));
-        return "views/order/my-product-list";
+    // GET /orders/purchased-books — Sách đã mua
+    @GetMapping("/purchased-books")
+    public ResponseEntity<?> getPurchasedBooks() {
+        Account user = (Account) request.getAttribute("currentUser");
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Vui lòng đăng nhập"));
+
+        return ResponseEntity.ok(orderService.findPurchasedBooks(user.getEmail()));
     }
 }
