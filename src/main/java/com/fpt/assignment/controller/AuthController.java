@@ -5,6 +5,7 @@ import com.fpt.assignment.dto.RegisterForm;
 import com.fpt.assignment.entity.Account;
 import com.fpt.assignment.security.JwtService;
 import com.fpt.assignment.service.AuthService;
+import com.fpt.assignment.service.GoogleAuthService;
 import com.fpt.assignment.utils.XMailer;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class AuthController {
     @Autowired
     HttpSession session; // Vẫn dùng session cho OTP flow
 
+    @Autowired
+    GoogleAuthService googleAuthService;
+
     // ĐĂNG NHẬP → trả JWT
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginForm dto) {
@@ -40,6 +44,17 @@ public class AuthController {
                     "avatar", user.getAvatar() != null ? user.getAvatar() : "",
                     "isAdmin", user.isAdmin()
             ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // ĐĂNG NHẬP BẰNG GOOGLE
+    @PostMapping("/google")
+    public ResponseEntity<?> googleLogin(@RequestBody com.fpt.assignment.dto.GoogleLoginRequest dto) {
+        try {
+            Map<String, Object> responseData = googleAuthService.verifyAndLogin(dto.getIdToken());
+            return ResponseEntity.ok(responseData);
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
         }
